@@ -1,24 +1,20 @@
-import express from "express";
-import mongoose from "mongoose";
-import dotenv from "dotenv";
-dotenv.config();
-const app = express();
+require('dotenv').config();
+const app = require('./app.js');
+const mongoose = require('mongoose');
 
-app.listen(process.env.PORT, () => {
-  console.log(`Example app listening on port ${process.env.PORT}`);
-});
+const port = process.env.PORT;
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
+})
 
 try {
-  mongoose.connect(process.env.DATABASE_URL);
+  mongoose.connect(process.env.DATABASE_URL)
 } catch (error) {
   console.log(error);
 }
-const db = mongoose.connection;
-db.on("error", (error) => {
-  console.log(error);
-});
-db.once("open", () => {
-  console.log("connected to mongo");
-});
 
-export { db, app };
+const db = mongoose.connection
+db.on('error', error => {console.log(error)})
+db.once('open', () => {console.log("connected to mongo")})
+
+module.exports = db;

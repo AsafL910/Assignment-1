@@ -1,6 +1,6 @@
 const request = require('supertest');
 const mongoose = require('mongoose');
-const app = require('./index.js');
+const app = require('./app.js');
 
 process.env.DATABASE_URL = 'mongodb://localhost:27017/testdatabase';
 process.env.PORT = 3000;

@@ -1,1 +1,1 @@
-const db = require('../../index')
+const db = require('../db/DbConnection')

@@ -1,1 +1,1 @@
-const db = require('../repository/Repository')
+const db = require('../db/DbConnection')

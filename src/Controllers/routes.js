@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { savePost, getAllPosts } = require("../DAL");
+const { savePost, getAllPosts, getPostsById } = require("../DAL");
 
 const newPostRoute = router.post("/newpost", async (req, res) => {
   try {
@@ -31,4 +31,17 @@ const getAllPostsRoute = router.get("/posts", async (req, res) => {
   }
 });
 
-module.exports = { newPostRoute, getAllPostsRoute };
+const getPostsByIdRoute = router.get("/post/:id", async (req, res) => {
+  try {
+    const post = await getPostsById(req.params.id);
+
+    if (!post) return res.status(404).json({ error: "Post not found" });
+
+    res.json(post);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+module.exports = { newPostRoute, getAllPostsRoute, getPostsByIdRoute };

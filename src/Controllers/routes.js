@@ -1,22 +1,34 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const dbActions = require("../DAL")
+const { savePost, getAllPosts } = require("../DAL");
 
-const newPostRoute = router.post("/newpost",async (req, res) => {
-    try {
-        const body = req.body
-        
-        if(!body.message || !body.sender)
-            res.status(400).json("required body not provided")
-        if(typeof body.message !== "string" || typeof body.sender !== "string" )
-            res.status(400).json("wrong type in one of the body parameters")       
-        
-        dbActions.savePost(body)
-        res.status(200).json("post saved successfuly")
-    } catch (error) {
-        console.log(error);
-        
-    }
-})
+const newPostRoute = router.post("/newpost", async (req, res) => {
+  try {
+    const body = req.body;
 
-module.exports = {newPostRoute}
+    if (!body.message || !body.sender)
+      res.status(400).json("required body not provided");
+    if (typeof body.message !== "string" || typeof body.sender !== "string")
+      res.status(400).json("wrong type in one of the body parameters");
+
+    const addedPost = await savePost(body);
+    console.log("im here");
+
+    res.json({ message: "post saved successfulyB", post: addedPost });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+const getAllPostsRoute = router.get("/posts", async (req, res) => {
+  try {
+    const posts = await getAllPosts();
+    res.json(posts);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+module.exports = { newPostRoute, getAllPostsRoute };

@@ -32,4 +32,11 @@ const getPostsBySender = (sender) => {
     console.error("Posts retriving failed: ", err);
   }
 };
-module.exports = { savePost, getAllPosts,getPostsById,getPostsBySender };
+
+const updatePostById = (id, message) => {
+  return Post.findByIdAndUpdate(id, {message}, {
+    new: true,
+  })
+}
+
+module.exports = { savePost, getAllPosts,getPostsById,getPostsBySender,updatePostById };

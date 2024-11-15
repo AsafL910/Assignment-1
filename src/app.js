@@ -5,7 +5,8 @@ const {
   newPostRoute,
   getAllPostsRoute,
   getPostsByIdRoute,
-  getPostBySenderRoute
+  getPostBySenderRoute,
+  updatePostRoute,
 } = require("./Controllers/routes");
 
 app.use(express.json());
@@ -13,5 +14,6 @@ app.post("/newPost", newPostRoute);
 app.get("/posts", getAllPostsRoute);
 app.get("/post/:id", getPostsByIdRoute);
 app.get("/post", getPostBySenderRoute);
+app.put("/postToUpdate/:id", updatePostRoute);
 
 module.exports = app;

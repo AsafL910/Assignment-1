@@ -1,6 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const { savePost, getAllPosts, getPostsById } = require("../DAL");
+const {
+  savePost,
+  getAllPosts,
+  getPostsById,
+  getPostsBySender,
+} = require("../DAL");
 
 const newPostRoute = router.post("/newpost", async (req, res) => {
   try {
@@ -12,7 +17,6 @@ const newPostRoute = router.post("/newpost", async (req, res) => {
       res.status(400).json("wrong type in one of the body parameters");
 
     const addedPost = await savePost(body);
-    console.log("im here");
 
     res.json({ message: "post saved successfulyB", post: addedPost });
   } catch (error) {
@@ -44,4 +48,21 @@ const getPostsByIdRoute = router.get("/post/:id", async (req, res) => {
   }
 });
 
-module.exports = { newPostRoute, getAllPostsRoute, getPostsByIdRoute };
+const getPostBySenderRoute = router.get("/post", async (req, res) => {
+  try {
+    const sender = req.query.sender;
+    if (!sender) return res.status(404).json({ error: "sender not provided" });
+
+    const posts = await getPostsBySender(sender);
+    res.json(posts);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+module.exports = {
+  newPostRoute,
+  getAllPostsRoute,
+  getPostsByIdRoute,
+  getPostBySenderRoute,
+};

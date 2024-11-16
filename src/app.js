@@ -23,7 +23,4 @@ app.get("/post/:id", getPostsByIdRoute);
 app.get("/post", getPostBySenderRoute);
 app.put("/postToUpdate/:id", updatePostRoute);
 
-//comments api
-app.use(newCommentRoute);
-
 module.exports = app;

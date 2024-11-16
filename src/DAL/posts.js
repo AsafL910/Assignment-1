@@ -1,4 +1,4 @@
-const {Post} = require("../db/schemas");
+const Post = require("../db/schemas");
 
 const savePost = (post) => {
   const newPost = new Post(post);

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon src/index.js localhost 3000",
-    "format": "prettier write ."
+    "format": "prettier --write '**/*.{js,ts}'"
   },
   "author": "",
   "license": "ISC",

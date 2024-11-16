@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const postSchema = new mongoose.Schema({
   message: {
@@ -8,7 +8,7 @@ const postSchema = new mongoose.Schema({
   sender: {
     type: String,
     required: true,
-  }
+  },
 });
 
 const commentSchema = new mongoose.Schema({
@@ -22,13 +22,12 @@ const commentSchema = new mongoose.Schema({
   },
   postId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Post', // Refers to the Post model
+    ref: "Post", // Refers to the Post model
     required: true,
   },
 });
 
-
 module.exports = {
-  Post: mongoose.model('Post', postSchema),
-  Comment: mongoose.model('Comment', commentSchema),
+  Post: mongoose.model("Post", postSchema),
+  Comment: mongoose.model("Comment", commentSchema),
 };

@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const bodyParser = require('body-parser');
+const bodyParser = require("body-parser");
 const mongoose = require("./db/DbConnection");
 
 const {
@@ -11,7 +11,10 @@ const {
   updatePostRoute,
 } = require("./Controllers/posts");
 
-const {newCommentRoute, getCommentByIdRoute} = require("./Controllers/comments")
+const {
+  newCommentRoute,
+  getCommentByIdRoute,
+} = require("./Controllers/comments");
 
 app.use(express.json());
 app.use(bodyParser.json());

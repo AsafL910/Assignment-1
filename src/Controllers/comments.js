@@ -1,7 +1,11 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router();
-const { saveComment, getCommentById } = require("../DAL/comments");
+const {
+  saveComment,
+  getCommentById,
+  getAllComments,
+} = require("../DAL/comments");
 const { getPostsById } = require("../DAL/posts");
 
 const newCommentRoute = router.post("/newComment", async (req, res) => {
@@ -41,4 +45,14 @@ const getCommentByIdRoute = router.get("/comment/:id", async (req, res) => {
   }
 });
 
-module.exports = { newCommentRoute, getCommentByIdRoute };
+const getAllCommentsRoute = router.get("/comments", async (req, res) => {
+  try {
+    const comments = await getAllComments();
+    return res.json(comments);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+module.exports = { newCommentRoute, getCommentByIdRoute, getAllCommentsRoute };

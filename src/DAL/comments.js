@@ -17,4 +17,12 @@ const getCommentById = (id) => {
   }
 };
 
-module.exports = { saveComment, getCommentById };
+const getAllComments = () => {
+  try {
+    return Comment.find();
+  } catch (err) {
+    console.error("Comments retriving failed: ", err);
+  }
+};
+
+module.exports = { saveComment, getCommentById, getAllComments };

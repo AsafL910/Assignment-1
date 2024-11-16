@@ -9,4 +9,12 @@ const saveComment = (comment) => {
     }
   };
 
-module.exports = { saveComment };
+const getCommentById = (id) => {
+try {
+    return Comment.findById(id);
+} catch (err) {
+    console.error("Comments retrieving failed: ", err);
+}
+};
+
+module.exports = { saveComment, getCommentById };

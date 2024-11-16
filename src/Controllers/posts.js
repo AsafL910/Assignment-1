@@ -66,7 +66,7 @@ const updatePostRoute = router.put("/postToUpdate/:id", async (req, res) => {
     const newMessage = req.body.message;
     if (!newMessage) return res.status(400).json("required body not provided");
     if (typeof newMessage !== "string")
-        return res.status(400).json("wrong type body parameters");
+      return res.status(400).json("wrong type body parameters");
 
     const updatedPost = await updatePostById(req.params.id, newMessage);
     if (!updatedPost) {

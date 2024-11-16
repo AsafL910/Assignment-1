@@ -35,9 +35,18 @@ const updateCommentById = (id, content) => {
   );
 };
 
+const deleteCommentById = (id) => {
+  try {
+    return Comment.findByIdAndDelete(id);
+  } catch (err) {
+    console.error("Comment deletion failed: ", err);
+  }
+};
+
 module.exports = {
   saveComment,
   getCommentById,
   getAllComments,
   updateCommentById,
+  deleteCommentById,
 };

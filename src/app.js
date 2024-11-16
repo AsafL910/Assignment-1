@@ -11,6 +11,8 @@ const {
   updatePostRoute,
 } = require("./Controllers/posts");
 
+const {newCommentRoute} = require("./Controllers/comments")
+
 app.use(express.json());
 app.use(bodyParser.json());
 
@@ -20,5 +22,8 @@ app.get("/posts", getAllPostsRoute);
 app.get("/post/:id", getPostsByIdRoute);
 app.get("/post", getPostBySenderRoute);
 app.put("/postToUpdate/:id", updatePostRoute);
+
+//comments api
+app.use(newCommentRoute);
 
 module.exports = app;

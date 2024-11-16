@@ -25,4 +25,19 @@ const getAllComments = () => {
   }
 };
 
-module.exports = { saveComment, getCommentById, getAllComments };
+const updateCommentById = (id, content) => {
+  return Comment.findByIdAndUpdate(
+    id,
+    { content },
+    {
+      new: true,
+    },
+  );
+};
+
+module.exports = {
+  saveComment,
+  getCommentById,
+  getAllComments,
+  updateCommentById,
+};

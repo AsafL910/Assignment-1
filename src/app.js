@@ -1,15 +1,20 @@
 const express = require("express");
 const app = express();
-const db = require("./db/DbConnection");
+const bodyParser = require('body-parser');
+const mongoose = require("./db/DbConnection");
+
 const {
   newPostRoute,
   getAllPostsRoute,
   getPostsByIdRoute,
   getPostBySenderRoute,
   updatePostRoute,
-} = require("./Controllers/routes");
+} = require("./Controllers/posts");
 
 app.use(express.json());
+app.use(bodyParser.json());
+
+// posts api
 app.post("/newPost", newPostRoute);
 app.get("/posts", getAllPostsRoute);
 app.get("/post/:id", getPostsByIdRoute);

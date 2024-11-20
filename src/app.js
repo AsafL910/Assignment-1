@@ -14,6 +14,10 @@ const {
 const {
   newCommentRoute,
   getCommentByIdRoute,
+  getAllCommentsRoute,
+  updateCommentRoute,
+  deleteCommentRoute,
+  getCommentsByPostRoute
 } = require("./Controllers/comments");
 
 app.use(express.json());
@@ -29,5 +33,9 @@ app.put("/postToUpdate/:id", updatePostRoute);
 //comments api
 app.use(newCommentRoute);
 app.use(getCommentByIdRoute);
+app.use(getAllCommentsRoute);
+app.use(updateCommentRoute);
+app.use(deleteCommentRoute);
+app.use(getCommentsByPostRoute);
 
 module.exports = app;

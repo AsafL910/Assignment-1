@@ -17,4 +17,45 @@ const getCommentById = (id) => {
   }
 };
 
-module.exports = { saveComment, getCommentById };
+const getAllComments = () => {
+  try {
+    return Comment.find();
+  } catch (err) {
+    console.error("Comments retriving failed: ", err);
+  }
+};
+
+const updateCommentById = (id, content) => {
+  return Comment.findByIdAndUpdate(
+    id,
+    { content },
+    {
+      new: true,
+    },
+  );
+};
+
+const deleteCommentById = (id) => {
+  try {
+    return Comment.findByIdAndDelete(id);
+  } catch (err) {
+    console.error("Comment deletion failed: ", err);
+  }
+};
+
+const getCommentsByPostId = (postId) => {
+  try {
+    return Comment.find({ postId });
+  } catch (err) {
+    console.error("Error retrieving comments by postId: ", err);
+  }
+};
+
+module.exports = {
+  saveComment,
+  getCommentById,
+  getAllComments,
+  updateCommentById,
+  deleteCommentById,
+  getCommentsByPostId,
+};

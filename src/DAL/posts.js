@@ -1,4 +1,4 @@
-const Post = require("../db/schemas");
+const { Post } = require("../db/schemas");
 
 const savePost = (post) => {
   const newPost = new Post(post);
@@ -27,16 +27,26 @@ const getPostsById = (id) => {
 
 const getPostsBySender = (sender) => {
   try {
-    return Post.find({sender});
+    return Post.find({ sender });
   } catch (err) {
     console.error("Posts retriving failed: ", err);
   }
 };
 
 const updatePostById = (id, message) => {
-  return Post.findByIdAndUpdate(id, {message}, {
-    new: true,
-  })
-}
+  return Post.findByIdAndUpdate(
+    id,
+    { message },
+    {
+      new: true,
+    },
+  );
+};
 
-module.exports = { savePost, getAllPosts,getPostsById,getPostsBySender,updatePostById };
+module.exports = {
+  savePost,
+  getAllPosts,
+  getPostsById,
+  getPostsBySender,
+  updatePostById,
+};

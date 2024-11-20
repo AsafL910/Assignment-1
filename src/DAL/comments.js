@@ -43,10 +43,19 @@ const deleteCommentById = (id) => {
   }
 };
 
+const getCommentsByPostId = (postId) => {
+  try {
+    return Comment.find({ postId });
+  } catch (err) {
+    console.error("Error retrieving comments by postId: ", err);
+  }
+};
+
 module.exports = {
   saveComment,
   getCommentById,
   getAllComments,
   updateCommentById,
   deleteCommentById,
+  getCommentsByPostId,
 };

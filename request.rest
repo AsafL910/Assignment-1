@@ -27,3 +27,39 @@ Content-Type: application/json
 {
     "message": "message to update to"
 }
+
+###
+
+POST http://localhost:3000/newComment
+Content-Type: application/json
+
+{
+    "sender": "john_doe",
+    "content": "This is a comment.",
+    "postId": "6734b95f9da035039afdcd09"
+}
+
+###
+
+GET http://localhost:3000/comments
+
+###
+
+GET http://localhost:3000/comment/6734b95f9da035039afdcd09
+
+###
+
+GET http://localhost:3000/comments/post/6734b95f9da035039afdcd09
+
+###
+
+PUT http://localhost:3000/updateComment/641c17a0b4dca222344e2f1a
+Content-Type: application/json
+
+{
+    "content": "Updated comment content"
+}
+
+###
+
+DELETE http://localhost:3000/deleteComment/641c17a0b4dca222344e2f1a

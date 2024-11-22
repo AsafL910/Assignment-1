@@ -24,11 +24,11 @@ app.use(express.json());
 app.use(bodyParser.json());
 
 // posts api
-app.post("/newPost", newPostRoute);
-app.get("/posts", getAllPostsRoute);
-app.get("/post/:id", getPostsByIdRoute);
-app.get("/post", getPostBySenderRoute);
-app.put("/postToUpdate/:id", updatePostRoute);
+app.use(newPostRoute);
+app.use( getAllPostsRoute);
+app.use(getPostsByIdRoute);
+app.use(getPostBySenderRoute);
+app.use(updatePostRoute);
 
 //comments api
 app.use(newCommentRoute);

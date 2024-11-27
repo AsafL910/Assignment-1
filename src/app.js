@@ -25,7 +25,7 @@ app.use(bodyParser.json());
 
 // posts api
 app.use(newPostRoute);
-app.use( getAllPostsRoute);
+app.use(getAllPostsRoute);
 app.use(getPostsByIdRoute);
 app.use(getPostBySenderRoute);
 app.use(updatePostRoute);

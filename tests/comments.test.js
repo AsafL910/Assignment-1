@@ -90,7 +90,9 @@ describe("Comment Routes Tests", () => {
   });
 
   it("should return 404 for non-existent comment ID", async () => {
-    const res = await request(app).get(`/comment/${new mongoose.Types.ObjectId()}`);
+    const res = await request(app).get(
+      `/comment/${new mongoose.Types.ObjectId()}`,
+    );
     expect(res.statusCode).toBe(404);
     expect(res.body).toHaveProperty("error", "Comment not found");
   });
@@ -150,7 +152,9 @@ describe("Comment Routes Tests", () => {
   });
 
   it("should return 404 for non-existent comment ID in delete", async () => {
-    const res = await request(app).delete(`/deleteComment/${new mongoose.Types.ObjectId()}`);
+    const res = await request(app).delete(
+      `/deleteComment/${new mongoose.Types.ObjectId()}`,
+    );
     expect(res.statusCode).toBe(404);
     expect(res.body).toHaveProperty("error", "Comment not found");
   });

@@ -45,7 +45,7 @@ const updateUserById = async (userId, username, email, password) => {
   return User.findByIdAndUpdate(
     userId,
     { username, email, password },
-    { new: true }
+    { new: true },
   );
 };
 

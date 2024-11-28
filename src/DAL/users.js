@@ -1,71 +1,59 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
-const { User } = require('../db/schemas');
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
+const { User } = require("../db/schemas");
 
-const createUser = async (username, email, password) => {
+const createUser = (username, email, password) => {
   try {
-
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = bcrypt.hash(password, 10);
     const newUser = new User({ username, email, password: hashedPassword });
-    await newUser.save();
-    return newUser;   
-
+    newUser.save();
+    return newUser;
   } catch (error) {
-    throw error;
+    console.log(error);
   }
-}
+};
 
- const getAllUsers = async () => {
+const getAllUsers = () => {
   try {
-    const users = await User.find();
+    const users = User.find();
     return users;
   } catch (error) {
-    throw error;
+    console.log(error);
   }
-}
+};
 
-const getUserById = async (userId) => {
+const getUserById = (userId) => {
   try {
-    const user = await User.findById(userId);
-    if (!user) {
-      throw new Error('User not found');
-    }
-    return user;
-  } catch (error)   
- {
-    throw error;
-  }
-}
-
-const updateUserById = async (userId, username, email, password) => {
-  try {
-    const user = await User.findByIdAndUpdate(userId, { username, email, password }, { new: true });
-    
-    if (!user) {
-      throw new Error('User not found');
-    }
-    return user;
+    return User.findById(userId);
   } catch (error) {
-    throw error;
+    console.log(error);
   }
-}
+};
 
-const deleteUserById = async (userId) => {
+const updateUserById = (userId, username, email, password) => {
   try {
-    const user = await User.findByIdAndDelete(userId);
-    if (!user) {
-      throw new Error('User not found');
-    }
-    return { message: 'User deleted successfully' };
+    return User.findByIdAndUpdate(
+      userId,
+      { username, email, password },
+      { new: true }
+    );
   } catch (error) {
-    throw error;
+    console.log(error);
   }
-}
+};
+
+const deleteUserById = (userId) => {
+  try {
+    return User.findByIdAndDelete(userId);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 module.exports = {
   createUser,
   getAllUsers,
   getUserById,
   updateUserById,
-  deleteUserById
+  deleteUserById,
 };

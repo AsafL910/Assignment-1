@@ -1,0 +1,110 @@
+const express = require("express");
+const router = express.Router();
+
+const {
+  createUser,
+  getAllUsers,
+  deleteUserById,
+  getUserById,
+  updateUserById,
+} = require("../DAL/users");
+
+// Create a new user
+router.post("/", async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
+
+    if (!username || !email || !password)
+      return res.status(400).json({ error: "Missing required fields" });
+
+    const newUser = await createUser(username, email, password);
+    return res.status(201).json(newUser);
+  } catch (error) {
+    console.error(error);
+    error.message === "username already exists" ||
+    error.message === "email already exists"
+      ? res.status(400)
+      : res.status(500);
+    return res.json({ error: error.message });
+  }
+});
+
+// Get all users
+router.get("/", async (req, res) => {
+  try {
+    const users = await getAllUsers();
+    return res.json(users);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+// Get a specific user by ID
+router.get("/:id", async (req, res) => {
+  try {
+    if (!req.params.id)
+      return res.status(400).json({ error: "Missing required fields" });
+
+    const user = await getUserById(req.params.id);
+
+    if (!user) {
+      return res.status(404).json({
+        error: "User not found",
+      });
+    }
+    return res.json(user);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Server Error" });
+  }
+});
+
+// Update a user by ID
+router.put("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { username, email, password } = req.body;
+
+    if (!id) {
+      return res.status(400).json({ error: "Missing required field: id" });
+    }
+
+    const updatedUser = await updateUserById(id, username, email, password);
+    if (!updatedUser) {
+      return res.status(400).json({ error: "user Not Found" });
+    }
+    return res.json(updatedUser);
+  } catch (error) {
+    console.error(error);
+    error.message === "Username already exists" ||
+    error.message === "Email already exists"
+      ? res.status(400)
+      : res.status(500);
+    return res.json({ error: error.message });
+  }
+});
+
+// Delete a user by ID
+router.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({ error: "Missing required field: id" });
+    }
+
+    const user = await deleteUserById(id);
+
+    if (!user) {
+      return res.status(404).json({
+        error: "User not found",
+      });
+    }
+    return res.json({ message: "User deleted successfully" });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+module.exports = router;

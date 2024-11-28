@@ -25,9 +25,9 @@ const getPostsById = (id) => {
   }
 };
 
-const getPostsBySender = (sender) => {
+const getPostsBySenderId = (senderId) => {
   try {
-    return Post.find({ sender });
+    return Post.find({ senderId });
   } catch (err) {
     console.error("Posts retriving failed: ", err);
   }
@@ -47,6 +47,6 @@ module.exports = {
   savePost,
   getAllPosts,
   getPostsById,
-  getPostsBySender,
+  getPostsBySenderId,
   updatePostById,
 };

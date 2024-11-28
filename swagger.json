@@ -1,0 +1,105 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "forum app API",
+    "version": "1.0.0"
+  },
+  "schemas": {
+    "User": {
+      "type": "object",
+      "required": ["username", "email", "password"],
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "Post": {
+      "type": "object",
+      "required": ["message", "senderId"],
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "senderId": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    },
+    "Comment": {
+      "type": "object",
+      "required": ["content", "senderId", "postId"],
+      "properties": {
+        "content": {
+          "type": "string"
+        },
+        "senderId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "postId": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    }
+  },
+  "paths": {
+    "/users": {
+      "get": {
+        "summary": "Get a list of all users",
+        "tags": ["Users"],
+        "responses": {
+          "200": {
+            "description": "List of users retrieved successfully",
+            "content": {
+              "application/json": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new User",
+        "tags": ["Users"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (e.g., missing required fields)"
+          }
+        }
+      }
+    }
+  }
+}

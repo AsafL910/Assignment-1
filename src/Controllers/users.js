@@ -10,7 +10,6 @@ const {
 } = require("../DAL/users");
 
 // Create a new user
-// TODO: user already exists 
 router.post("/", async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -22,7 +21,11 @@ router.post("/", async (req, res) => {
     return res.status(201).json(newUser);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: error.message });
+    error.message === "username already exists" ||
+    error.message === "email already exists"
+      ? res.status(400)
+      : res.status(500);
+    return res.json({ error: error.message });
   }
 });
 
@@ -58,8 +61,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // Update a user by ID
-// TODO: user already exists 
-router.put("/:id", async (req, res) => { 
+router.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const { username, email, password } = req.body;
@@ -69,10 +71,17 @@ router.put("/:id", async (req, res) => {
     }
 
     const updatedUser = await updateUserById(id, username, email, password);
+    if (!updatedUser) {
+      return res.status(400).json({ error: "user Not Found" });
+    }
     return res.json(updatedUser);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: error.message });
+    error.message === "Username already exists" ||
+    error.message === "Email already exists"
+      ? res.status(400)
+      : res.status(500);
+    return res.json({ error: error.message });
   }
 });
 

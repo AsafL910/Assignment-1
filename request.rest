@@ -70,8 +70,8 @@ POST http://localhost:3000/users
 Content-Type: application/json
 
   {
-    "username": "MockUser",
-    "email": "user@awsomeDomain.com",
+    "username": "MockUser1",
+    "email": "user@awsomeDomain1.com",
     "password": "passToEncrypt"
   }
 ###
@@ -83,12 +83,13 @@ GET http://localhost:3000/users
 GET http://localhost:3000/users/67487a1d94cbedc83578be7d
 
 ###
-PUT http://localhost:3000/users/67487a1d94cbedc83578be7d
+PUT http://localhost:3000/users/67488465cbda584883105a05
 Content-Type: application/json
 
 {
-    "email" : "user@myDifferentAwsomeDomain.com"
+    "username": "myUserNameIsCool",
+    "email" : "user@myDifferentAwsomeDomain.coma"
 }
 
 ###
-DELETE http://localhost:3000/users/67487a1d94cbedc83578be7d
+DELETE http://localhost:3000/users/67488465cbda584883105a05

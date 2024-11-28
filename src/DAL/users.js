@@ -3,53 +3,54 @@ const bcrypt = require("bcrypt");
 const { User } = require("../db/schemas");
 
 const createUser = async (username, email, password) => {
-  console.log({ username, email, password });
-
-  try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ username, email, password: hashedPassword });
-    newUser.save();
-    return newUser;
-  } catch (error) {
-    console.log(error);
+  const existingUser = await User.findOne({ username });
+  if (existingUser) {
+    throw new Error("Username already exists");
   }
+
+  const existingEmail = await User.findOne({ email });
+  if (existingEmail) {
+    throw new Error("Email already exists");
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const newUser = new User({ username, email, password: hashedPassword });
+  newUser.save();
+  return newUser;
 };
 
 const getAllUsers = () => {
-  try {
-    const users = User.find();
-    return users;
-  } catch (error) {
-    console.log(error);
-  }
+  return User.find();
 };
 
 const getUserById = (userId) => {
-  try {
-    return User.findById(userId);
-  } catch (error) {
-    console.log(error);
-  }
+  return User.findById(userId);
 };
 
-const updateUserById = (userId, username, email, password) => {
-  try {
-    return User.findByIdAndUpdate(
-      userId,
-      { username, email, password },
-      { new: true }
-    );
-  } catch (error) {
-    console.log(error);
+const updateUserById = async (userId, username, email, password) => {
+  if (username) {
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      throw new Error("Username already exists");
+    }
   }
+
+  if (email) {
+    const existingEmail = await User.findOne({ email });
+    if (existingEmail) {
+      throw new Error("Email already exists");
+    }
+  }
+
+  return User.findByIdAndUpdate(
+    userId,
+    { username, email, password },
+    { new: true }
+  );
 };
 
 const deleteUserById = (userId) => {
-  try {
-    return User.findByIdAndDelete(userId);
-  } catch (error) {
-    console.log(error);
-  }
+  return User.findByIdAndDelete(userId);
 };
 
 module.exports = {

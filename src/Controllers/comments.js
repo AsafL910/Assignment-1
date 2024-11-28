@@ -11,13 +11,13 @@ const {
 } = require("../DAL/comments");
 const { getPostsById } = require("../DAL/posts");
 
-const newCommentRoute = router.post("/newComment", async (req, res) => {
+ router.post("/", async (req, res) => {
   try {
-    if (!req.body.content || !req.body.sender || !req.body.postId)
+    if (!req.body.content || !req.body.senderId || !req.body.postId)
       return res.status(400).json("required body not provided");
     if (
       typeof req.body.content !== "string" ||
-      typeof req.body.sender !== "string" ||
+      typeof req.body.senderId !== "string" ||
       !mongoose.Types.ObjectId.isValid(req.body.postId)
     )
       return res.status(400).json("wrong type in one of the body parameters");
@@ -35,7 +35,7 @@ const newCommentRoute = router.post("/newComment", async (req, res) => {
   }
 });
 
-const getCommentByIdRoute = router.get("/comment/:id", async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const comment = await getCommentById(req.params.id);
 
@@ -48,7 +48,7 @@ const getCommentByIdRoute = router.get("/comment/:id", async (req, res) => {
   }
 });
 
-const getAllCommentsRoute = router.get("/comments", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const comments = await getAllComments();
     return res.json(comments);
@@ -58,8 +58,8 @@ const getAllCommentsRoute = router.get("/comments", async (req, res) => {
   }
 });
 
-const updateCommentRoute = router.put(
-  "/updateComment/:id",
+router.put(
+  "/:id",
   async (req, res) => {
     try {
       const newContent = req.body.content;
@@ -81,8 +81,8 @@ const updateCommentRoute = router.put(
   },
 );
 
-const deleteCommentRoute = router.delete(
-  "/deleteComment/:id",
+router.delete(
+  "/:id",
   async (req, res) => {
     try {
       const { id } = req.params;
@@ -107,8 +107,8 @@ const deleteCommentRoute = router.delete(
   },
 );
 
-const getCommentsByPostRoute = router.get(
-  "/comments/post/:postId",
+router.get(
+  "/post/:postId",
   async (req, res) => {
     try {
       const { postId } = req.params;
@@ -138,11 +138,4 @@ const getCommentsByPostRoute = router.get(
   },
 );
 
-module.exports = {
-  newCommentRoute,
-  getCommentByIdRoute,
-  getAllCommentsRoute,
-  updateCommentRoute,
-  deleteCommentRoute,
-  getCommentsByPostRoute,
-};
+module.exports = router

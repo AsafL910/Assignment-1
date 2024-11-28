@@ -1,10 +1,10 @@
-###
+### posts API
 
-POST http://localhost:3000/newpost
+POST http://localhost:3000/posts
 Content-Type: application/json
 
 {
-    "sender": "meir",
+    "senderId": "67488a503494abd997b4af12",
     "message": "this is a test message"
 }
 ###
@@ -13,28 +13,28 @@ GET http://localhost:3000/posts
 
 ###
 
-GET http://localhost:3000/post/6734b95f9da035039afdcd09
+GET http://localhost:3000/posts/6734b95f9da035039afdcd09
 
 ###
 
-GET http://localhost:3000/post?sender=meir
+GET http://localhost:3000/posts/sender?id=67488a503494abd997b4af12
 
 ###
 
-PUT http://localhost:3000/postToUpdate/6734b95f9da035039afdcd09
+PUT http://localhost:3000/posts/6734b95f9da035039afdcd09
 Content-Type: application/json
 
 {
-    "message": "message to update to"
+    "message": "message to updateA"
 }
 
-###
+### messages API
 
-POST http://localhost:3000/newComment
+POST http://localhost:3000/comments
 Content-Type: application/json
 
 {
-    "sender": "john_doe",
+    "senderId": "67488a503494abd997b4af12",
     "content": "This is a comment.",
     "postId": "6734b95f9da035039afdcd09"
 }
@@ -45,7 +45,7 @@ GET http://localhost:3000/comments
 
 ###
 
-GET http://localhost:3000/comment/6734b95f9da035039afdcd09
+GET http://localhost:3000/comments/6748901949152b8687e00985
 
 ###
 
@@ -53,7 +53,7 @@ GET http://localhost:3000/comments/post/6734b95f9da035039afdcd09
 
 ###
 
-PUT http://localhost:3000/updateComment/641c17a0b4dca222344e2f1a
+PUT http://localhost:3000/comments/6748901949152b8687e00985
 Content-Type: application/json
 
 {
@@ -62,4 +62,34 @@ Content-Type: application/json
 
 ###
 
-DELETE http://localhost:3000/deleteComment/641c17a0b4dca222344e2f1a
+DELETE http://localhost:3000/comments/6748901949152b8687e00985
+
+### Users API
+
+POST http://localhost:3000/users
+Content-Type: application/json
+
+  {
+    "username": "meir",
+    "email": "user@awsomeDomain1.com",
+    "password": "passToEncrypt"
+  }
+###
+
+GET http://localhost:3000/users
+
+###
+
+GET http://localhost:3000/users/6748904649152b8687e00990
+
+###
+PUT http://localhost:3000/users/6748904649152b8687e00990
+Content-Type: application/json
+
+{
+    "username": "meirA",
+    "email" : "user@myDaifferentAwsomeDomain.coma"
+}
+
+###
+DELETE http://localhost:3000/users/6748904649152b8687e00990

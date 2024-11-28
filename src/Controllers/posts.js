@@ -8,7 +8,7 @@ const {
   updatePostById,
 } = require("../DAL/posts");
 
-const newPostRoute = router.post("/newpost", async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const body = req.body;
 
@@ -26,7 +26,7 @@ const newPostRoute = router.post("/newpost", async (req, res) => {
   }
 });
 
-const getAllPostsRoute = router.get("/posts", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const posts = await getAllPosts();
     return res.json(posts);
@@ -36,7 +36,7 @@ const getAllPostsRoute = router.get("/posts", async (req, res) => {
   }
 });
 
-const getPostsByIdRoute = router.get("/post/:id", async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const post = await getPostsById(req.params.id);
 
@@ -49,7 +49,7 @@ const getPostsByIdRoute = router.get("/post/:id", async (req, res) => {
   }
 });
 
-const getPostBySenderRoute = router.get("/post", async (req, res) => {
+router.get("/sender", async (req, res) => {
   try {
     const sender = req.query.sender;
     if (!sender) return res.status(404).json({ error: "sender not provided" });
@@ -61,7 +61,7 @@ const getPostBySenderRoute = router.get("/post", async (req, res) => {
   }
 });
 
-const updatePostRoute = router.put("/postToUpdate/:id", async (req, res) => {
+router.put("/:id", async (req, res) => {
   try {
     const newMessage = req.body.message;
     if (!newMessage) return res.status(400).json("required body not provided");
@@ -80,10 +80,4 @@ const updatePostRoute = router.put("/postToUpdate/:id", async (req, res) => {
   }
 });
 
-module.exports = {
-  newPostRoute,
-  getAllPostsRoute,
-  getPostsByIdRoute,
-  getPostBySenderRoute,
-  updatePostRoute,
-};
+module.exports = router

@@ -10,6 +10,7 @@ const {
 } = require("../DAL/users");
 
 // Create a new user
+// TODO: user already exists 
 router.post("/", async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -18,10 +19,10 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ error: "Missing required fields" });
 
     const newUser = await createUser(username, email, password);
-    res.status(201).json(newUser);
+    return res.status(201).json(newUser);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 });
 
@@ -29,10 +30,10 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const users = await getAllUsers();
-    res.json(users);
+    return res.json(users);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 });
 
@@ -49,15 +50,16 @@ router.get("/:id", async (req, res) => {
         error: "User not found",
       });
     }
-    res.json(user);
+    return res.json(user);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Server Error" });
+    return res.status(500).json({ error: "Server Error" });
   }
 });
 
 // Update a user by ID
-router.put("/:id", async (req, res) => {
+// TODO: user already exists 
+router.put("/:id", async (req, res) => { 
   try {
     const { id } = req.params;
     const { username, email, password } = req.body;
@@ -67,10 +69,10 @@ router.put("/:id", async (req, res) => {
     }
 
     const updatedUser = await updateUserById(id, username, email, password);
-    res.json(updatedUser);
+    return res.json(updatedUser);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 });
 
@@ -90,9 +92,9 @@ router.delete("/:id", async (req, res) => {
         error: "User not found",
       });
     }
-    res.json({ message: "User deleted successfully" });
+    return res.json({ message: "User deleted successfully" });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 });
 

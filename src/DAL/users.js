@@ -2,9 +2,11 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const { User } = require("../db/schemas");
 
-const createUser = (username, email, password) => {
+const createUser = async (username, email, password) => {
+  console.log({ username, email, password });
+
   try {
-    const hashedPassword = bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({ username, email, password: hashedPassword });
     newUser.save();
     return newUser;

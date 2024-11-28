@@ -1,6 +1,6 @@
-###
+### posts API
 
-POST http://localhost:3000/newpost
+POST http://localhost:3000/posts
 Content-Type: application/json
 
 {
@@ -13,24 +13,24 @@ GET http://localhost:3000/posts
 
 ###
 
-GET http://localhost:3000/post/6734b95f9da035039afdcd09
+GET http://localhost:3000/posts/6734b95f9da035039afdcd09
 
 ###
 
-GET http://localhost:3000/post?sender=meir
+GET http://localhost:3000/posts?sender=meir
 
 ###
 
-PUT http://localhost:3000/postToUpdate/6734b95f9da035039afdcd09
+PUT http://localhost:3000/posts/6734b95f9da035039afdcd09
 Content-Type: application/json
 
 {
     "message": "message to update to"
 }
 
-###
+### messages API
 
-POST http://localhost:3000/newComment
+POST http://localhost:3000/comments
 Content-Type: application/json
 
 {
@@ -45,7 +45,7 @@ GET http://localhost:3000/comments
 
 ###
 
-GET http://localhost:3000/comment/6734b95f9da035039afdcd09
+GET http://localhost:3000/comments/6734b95f9da035039afdcd09
 
 ###
 
@@ -53,7 +53,7 @@ GET http://localhost:3000/comments/post/6734b95f9da035039afdcd09
 
 ###
 
-PUT http://localhost:3000/updateComment/641c17a0b4dca222344e2f1a
+PUT http://localhost:3000/comments/641c17a0b4dca222344e2f1a
 Content-Type: application/json
 
 {
@@ -62,8 +62,33 @@ Content-Type: application/json
 
 ###
 
-DELETE http://localhost:3000/deleteComment/641c17a0b4dca222344e2f1a
+DELETE http://localhost:3000/comments/641c17a0b4dca222344e2f1a
+
+### Users API
+
+POST http://localhost:3000/users
+Content-Type: application/json
+
+  {
+    "username": "MockUser",
+    "email": "user@awsomeDomain.com",
+    "password": "passToEncrypt"
+  }
+###
+
+GET http://localhost:3000/users
 
 ###
 
-GET  http://localhost:3000/users/
+GET http://localhost:3000/users/67487a1d94cbedc83578be7d
+
+###
+PUT http://localhost:3000/users/67487a1d94cbedc83578be7d
+Content-Type: application/json
+
+{
+    "email" : "user@myDifferentAwsomeDomain.com"
+}
+
+###
+DELETE http://localhost:3000/users/67487a1d94cbedc83578be7d

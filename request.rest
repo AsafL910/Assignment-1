@@ -63,3 +63,7 @@ Content-Type: application/json
 ###
 
 DELETE http://localhost:3000/deleteComment/641c17a0b4dca222344e2f1a
+
+###
+
+GET  http://localhost:3000/users/

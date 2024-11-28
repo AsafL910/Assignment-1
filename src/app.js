@@ -20,6 +20,8 @@ const {
   getCommentsByPostRoute
 } = require("./Controllers/comments");
 
+const userRouter = require('./Controllers/users')
+
 app.use(express.json());
 app.use(bodyParser.json());
 
@@ -37,5 +39,9 @@ app.use(getAllCommentsRoute);
 app.use(updateCommentRoute);
 app.use(deleteCommentRoute);
 app.use(getCommentsByPostRoute);
+
+//users api
+app.use('/users',userRouter)
+
 
 module.exports = app;

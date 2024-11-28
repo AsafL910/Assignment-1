@@ -13,11 +13,11 @@ const { getPostsById } = require("../DAL/posts");
 
  router.post("/", async (req, res) => {
   try {
-    if (!req.body.content || !req.body.sender || !req.body.postId)
+    if (!req.body.content || !req.body.senderId || !req.body.postId)
       return res.status(400).json("required body not provided");
     if (
       typeof req.body.content !== "string" ||
-      typeof req.body.sender !== "string" ||
+      typeof req.body.senderId !== "string" ||
       !mongoose.Types.ObjectId.isValid(req.body.postId)
     )
       return res.status(400).json("wrong type in one of the body parameters");

@@ -1,15 +1,11 @@
 const mongoose = require("mongoose");
 
- const postSchema = new mongoose.Schema({
-    message: {
-      type: String,
-      required: true,
-    },
-    sender: {
-      type: String,
-      required: true,
-    },
-  });
-  
+const postSchema = new mongoose.Schema({
+  message: {
+    type: String,
+    required: true,
+  },
+  senderId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+});
 
-  module.exports = mongoose.model("Post", postSchema)
+module.exports = mongoose.model("Post", postSchema);

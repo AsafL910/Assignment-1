@@ -15,6 +15,7 @@ const extractUserProps = (user) => ({
   email: user.email,
 });
 
+//TODO: validate user not empty
 // Create a new user
 router.post("/", async (req, res) => {
   try {
@@ -66,6 +67,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+//TODO: validate data not empty
 // Update a user by ID
 router.put("/:id", async (req, res) => {
   try {

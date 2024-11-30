@@ -9,6 +9,12 @@ const {
   updateUserById,
 } = require("../DAL/users");
 
+const extractUserProps = (user) => ({
+  id: user.id,
+  username: user.username,
+  email: user.email,
+});
+
 // Create a new user
 router.post("/", async (req, res) => {
   try {
@@ -18,7 +24,7 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ error: "Missing required fields" });
 
     const newUser = await createUser(username, email, password);
-    return res.status(201).json(newUser);
+    return res.status(201).json(extractUserProps(newUser));
   } catch (error) {
     console.error(error);
     error.message === "username already exists" ||
@@ -33,7 +39,7 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const users = await getAllUsers();
-    return res.json(users);
+    return res.json(users.map(extractUserProps));
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: error.message });
@@ -53,7 +59,7 @@ router.get("/:id", async (req, res) => {
         error: "User not found",
       });
     }
-    return res.json(user);
+    return res.json(extractUserProps(user));
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Server Error" });
@@ -74,7 +80,7 @@ router.put("/:id", async (req, res) => {
     if (!updatedUser) {
       return res.status(400).json({ error: "user Not Found" });
     }
-    return res.json(updatedUser);
+    return res.json(extractUserProps(updatedUser));
   } catch (error) {
     console.error(error);
     error.message === "Username already exists" ||
@@ -101,7 +107,10 @@ router.delete("/:id", async (req, res) => {
         error: "User not found",
       });
     }
-    return res.json({ message: "User deleted successfully" });
+    return res.json({
+      message: "User deleted successfully",
+      user: extractUserProps(user),
+    });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }

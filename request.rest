@@ -70,8 +70,8 @@ POST http://localhost:3000/users
 Content-Type: application/json
 
   {
-    "username": "meir",
-    "email": "user@awsomeDomain1.com",
+    "username": "meiar",
+    "email": "user@awsomeDomaain1.com",
     "password": "passToEncrypt"
   }
 ###
@@ -80,10 +80,10 @@ GET http://localhost:3000/users
 
 ###
 
-GET http://localhost:3000/users/6748904649152b8687e00990
+GET http://localhost:3000/users/67487d5d9ccb0b6c6b3de066
 
 ###
-PUT http://localhost:3000/users/6748904649152b8687e00990
+PUT http://localhost:3000/users/67487d5d9ccb0b6c6b3de066
 Content-Type: application/json
 
 {
@@ -92,4 +92,4 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:3000/users/6748904649152b8687e00990
+DELETE http://localhost:3000/users/67487d5d9ccb0b6c6b3de066

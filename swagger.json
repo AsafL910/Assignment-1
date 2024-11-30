@@ -175,9 +175,7 @@
       },
       "delete": {
         "summary": "Delete a specific user by id",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "parameters": [
           {
             "name": "userId",
@@ -385,6 +383,264 @@
         "responses": {
           "204": {
             "description": "Post deleted successfully"
+          },
+          "404": {
+            "description": "Post not found"
+          }
+        }
+      }
+    },
+    "/comments": {
+      "post": {
+        "summary": "Create a new comment",
+        "tags": ["Comments"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["content", "senderId", "postId"],
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "description": "The content of the comment"
+                  },
+                  "senderId": {
+                    "type": "string",
+                    "description": "The ID of the comment sender"
+                  },
+                  "postId": {
+                    "type": "string",
+                    "description": "The ID of the post the comment belongs to",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Comment saved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "comment": {
+                      "type": "string",
+                      "description": "Success message"
+                    },
+                    "post": {
+                      "type": "object",
+                      "description": "The saved comment details"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Error message"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Error message"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get all comments",
+        "tags": ["Comments"],
+        "responses": {
+          "200": {
+            "description": "List of all comments",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "description": "Comment object"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Error message"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/comments/{id}": {
+      "get": {
+        "summary": "Get a comment by ID",
+        "tags": ["Comments"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The comment object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Comment object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a comment",
+        "tags": ["Comments"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "description": "The new content for the comment"
+                  }
+                },
+                "required": ["content"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Comment updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Comment"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (e.g., invalid input)"
+          },
+          "404": {
+            "description": "Comment not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a comment",
+        "tags": ["Comments"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Comment deleted successfully"
+          },
+          "404": {
+            "description": "Comment not found"
+          }
+        }
+      }
+    },
+    "/comments/post/{postId}": {
+      "get": {
+        "summary": "Get comments for a specific post",
+        "tags": ["Comments"],
+        "parameters": [
+          {
+            "name": "postId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of comments for the post",
+            "content": {
+              "application/json": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Comment"
+                }
+              }
+            }
           },
           "404": {
             "description": "Post not found"

@@ -4,50 +4,52 @@
     "title": "forum app API",
     "version": "1.0.0"
   },
-  "schemas": {
-    "User": {
-      "type": "object",
-      "required": ["username", "email", "password"],
-      "properties": {
-        "username": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string",
-          "format": "email"
-        },
-        "password": {
-          "type": "string"
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "required": ["username", "email", "password"],
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string"
+          }
         }
-      }
-    },
-    "Post": {
-      "type": "object",
-      "required": ["message", "senderId"],
-      "properties": {
-        "message": {
-          "type": "string"
-        },
-        "senderId": {
-          "type": "string",
-          "format": "uuid"
+      },
+      "Post": {
+        "type": "object",
+        "required": ["message", "senderId"],
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "senderId": {
+            "type": "string",
+            "format": "uuid"
+          }
         }
-      }
-    },
-    "Comment": {
-      "type": "object",
-      "required": ["content", "senderId", "postId"],
-      "properties": {
-        "content": {
-          "type": "string"
-        },
-        "senderId": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "postId": {
-          "type": "string",
-          "format": "uuid"
+      },
+      "Comment": {
+        "type": "object",
+        "required": ["content", "senderId", "postId"],
+        "properties": {
+          "content": {
+            "type": "string"
+          },
+          "senderId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "postId": {
+            "type": "string",
+            "format": "uuid"
+          }
         }
       }
     }
@@ -97,6 +99,100 @@
           },
           "400": {
             "description": "Bad request (e.g., missing required fields)"
+          }
+        }
+      }
+    },
+    "/users/{userId}": {
+      "get": {
+        "summary": "Get a specific user by ID",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a specific user",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (e.g., invalid input)"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a specific user by id",
+        "tags": [
+          "Users"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User deleted successfully"
+          },
+          "404": {
+            "description": "User not found"
           }
         }
       }

@@ -7,9 +7,15 @@ const postRouter = require("./Controllers/posts");
 const commentRouter = require("./Controllers/comments");
 const userRouter = require("./Controllers/users");
 
+const swaggerJSDoc = require("swagger-jsdoc");
+const swaggerUi = require("swagger-ui-express");
+
+const swaggerOptions = require("../swagger.json");
+
 app.use(express.json());
 app.use(bodyParser.json());
 
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerOptions));
 app.use("/posts", postRouter);
 app.use("/comments", commentRouter);
 app.use("/users", userRouter);

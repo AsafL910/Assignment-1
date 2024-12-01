@@ -8,7 +8,15 @@ const {
   getUserById,
   updateUserById,
 } = require("../DAL/users");
+const { default: mongoose } = require("mongoose");
 
+const extractUserProps = (user) => ({
+  id: user.id,
+  username: user.username,
+  email: user.email,
+});
+
+//TODO: validate user not empty
 // Create a new user
 router.post("/", async (req, res) => {
   try {
@@ -18,11 +26,10 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ error: "Missing required fields" });
 
     const newUser = await createUser(username, email, password);
-    return res.status(201).json(newUser);
+    return res.status(201).json(extractUserProps(newUser));
   } catch (error) {
-    console.error(error);
-    error.message === "username already exists" ||
-    error.message === "email already exists"
+    error.message === "Username already exists" ||
+    error.message === "Email already exists"
       ? res.status(400)
       : res.status(500);
     return res.json({ error: error.message });
@@ -33,7 +40,7 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const users = await getAllUsers();
-    return res.json(users);
+    return res.json(users.map(extractUserProps));
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: error.message });
@@ -53,13 +60,14 @@ router.get("/:id", async (req, res) => {
         error: "User not found",
       });
     }
-    return res.json(user);
+    return res.json(extractUserProps(user));
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Server Error" });
   }
 });
 
+//TODO: validate data not empty
 // Update a user by ID
 router.put("/:id", async (req, res) => {
   try {
@@ -74,9 +82,8 @@ router.put("/:id", async (req, res) => {
     if (!updatedUser) {
       return res.status(400).json({ error: "user Not Found" });
     }
-    return res.json(updatedUser);
+    return res.json(extractUserProps(updatedUser));
   } catch (error) {
-    console.error(error);
     error.message === "Username already exists" ||
     error.message === "Email already exists"
       ? res.status(400)
@@ -93,7 +100,9 @@ router.delete("/:id", async (req, res) => {
     if (!id) {
       return res.status(400).json({ error: "Missing required field: id" });
     }
-
+    if (typeof id !== "string" || !mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "incorrect id format" });
+    }
     const user = await deleteUserById(id);
 
     if (!user) {
@@ -101,7 +110,10 @@ router.delete("/:id", async (req, res) => {
         error: "User not found",
       });
     }
-    return res.json({ message: "User deleted successfully" });
+    return res.json({
+      message: "User deleted successfully",
+      user: extractUserProps(user),
+    });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }

@@ -31,7 +31,7 @@
           },
           "senderId": {
             "type": "string",
-            "format": "uuid"
+            "format": "string"
           }
         }
       },
@@ -44,11 +44,11 @@
           },
           "senderId": {
             "type": "string",
-            "format": "uuid"
+            "format": "string"
           },
           "postId": {
             "type": "string",
-            "format": "uuid"
+            "format": "string"
           }
         }
       }

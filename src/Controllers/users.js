@@ -8,6 +8,7 @@ const {
   getUserById,
   updateUserById,
 } = require("../DAL/users");
+const { default: mongoose } = require("mongoose");
 
 const extractUserProps = (user) => ({
   id: user.id,
@@ -27,9 +28,8 @@ router.post("/", async (req, res) => {
     const newUser = await createUser(username, email, password);
     return res.status(201).json(extractUserProps(newUser));
   } catch (error) {
-    console.error(error);
-    error.message === "username already exists" ||
-    error.message === "email already exists"
+    error.message === "Username already exists" ||
+    error.message === "Email already exists"
       ? res.status(400)
       : res.status(500);
     return res.json({ error: error.message });
@@ -84,7 +84,6 @@ router.put("/:id", async (req, res) => {
     }
     return res.json(extractUserProps(updatedUser));
   } catch (error) {
-    console.error(error);
     error.message === "Username already exists" ||
     error.message === "Email already exists"
       ? res.status(400)
@@ -101,7 +100,9 @@ router.delete("/:id", async (req, res) => {
     if (!id) {
       return res.status(400).json({ error: "Missing required field: id" });
     }
-
+    if (typeof id !== "string" || !mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "incorrect id format" });
+    }
     const user = await deleteUserById(id);
 
     if (!user) {

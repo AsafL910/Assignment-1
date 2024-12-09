@@ -8,7 +8,8 @@ const {
   getUserById,
   updateUserById,
 } = require("../DAL/users");
-const { default: mongoose } = require("mongoose");
+const mongoose = require("mongoose");
+const authenticate = require("../Middlewares/authMiddleware");
 
 const extractUserProps = (user) => ({
   id: user.id,
@@ -18,7 +19,7 @@ const extractUserProps = (user) => ({
 
 //TODO: validate user not empty
 // Create a new user
-router.post("/", async (req, res) => {
+router.post("/", authenticate, async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
@@ -37,7 +38,7 @@ router.post("/", async (req, res) => {
 });
 
 // Get all users
-router.get("/", async (req, res) => {
+router.get("/", authenticate, async (req, res) => {
   try {
     const users = await getAllUsers();
     return res.json(users.map(extractUserProps));
@@ -48,7 +49,7 @@ router.get("/", async (req, res) => {
 });
 
 // Get a specific user by ID
-router.get("/:id", async (req, res) => {
+router.get("/:id", authenticate, async (req, res) => {
   try {
     if (!req.params.id)
       return res.status(400).json({ error: "Missing required fields" });
@@ -69,7 +70,7 @@ router.get("/:id", async (req, res) => {
 
 //TODO: validate data not empty
 // Update a user by ID
-router.put("/:id", async (req, res) => {
+router.put("/:id", authenticate, async (req, res) => {
   try {
     const { id } = req.params;
     const { username, email, password } = req.body;
@@ -93,7 +94,7 @@ router.put("/:id", async (req, res) => {
 });
 
 // Delete a user by ID
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authenticate, async (req, res) => {
   try {
     const { id } = req.params;
 

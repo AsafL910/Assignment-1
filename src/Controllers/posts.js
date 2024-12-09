@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router();
+const authenticate = require("../Middlewares/authMiddleware");
 
 const {
   savePost,
@@ -10,7 +11,7 @@ const {
   updatePostById,
 } = require("../DAL/posts");
 
-router.post("/", async (req, res) => {
+router.post("/", authenticate, async (req, res) => {
   try {
     const body = req.body;
 
@@ -31,7 +32,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.get("/", async (req, res) => {
+router.get("/", authenticate, async (req, res) => {
   try {
     const posts = await getAllPosts();
     return res.json(posts);
@@ -41,7 +42,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/sender", async (req, res) => {
+router.get("/sender", authenticate, async (req, res) => {
   try {
     const senderId = req.query.id;
     if (!senderId)
@@ -54,7 +55,7 @@ router.get("/sender", async (req, res) => {
   }
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", authenticate, async (req, res) => {
   try {
     const post = await getPostsById(req.params.id);
 
@@ -67,7 +68,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", authenticate, async (req, res) => {
   try {
     const newMessage = req.body.message;
     if (!newMessage) return res.status(400).json("required body not provided");

@@ -10,8 +10,9 @@ const {
   getCommentsByPostId,
 } = require("../DAL/comments");
 const { getPostsById } = require("../DAL/posts");
+const authenticate = require("../Middlewares/authMiddleware");
 
-router.post("/", async (req, res) => {
+router.post("/", authenticate, async (req, res) => {
   try {
     if (!req.body.content || !req.body.senderId || !req.body.postId)
       return res.status(400).json("required body not provided");
@@ -35,7 +36,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", authenticate, async (req, res) => {
   try {
     const comment = await getCommentById(req.params.id);
 
@@ -48,7 +49,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.get("/", async (req, res) => {
+router.get("/", authenticate, async (req, res) => {
   try {
     const comments = await getAllComments();
     return res.json(comments);
@@ -58,7 +59,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", authenticate, async (req, res) => {
   try {
     const newContent = req.body.content;
     if (!newContent) return res.status(400).json("required body not provided");
@@ -77,7 +78,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authenticate, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -100,7 +101,7 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-router.get("/post/:postId", async (req, res) => {
+router.get("/post/:postId", authenticate, async (req, res) => {
   try {
     const { postId } = req.params;
 

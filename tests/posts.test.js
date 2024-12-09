@@ -17,7 +17,6 @@ beforeAll(async () => {
   });
 
   const res = await request(app)
-    .set("Authorization", "JWT " + accessToken)
     .post("/auth/register")
     .send({
       email: userEmail,
@@ -29,7 +28,6 @@ beforeAll(async () => {
 
 async function loginUser() {
   const response = await request(app)
-    .set("Authorization", "JWT " + accessToken)
     .post("/auth/login")
     .send({
       email: userEmail,

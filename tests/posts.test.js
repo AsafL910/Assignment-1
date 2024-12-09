@@ -5,61 +5,61 @@ const request = require("supertest");
 const app = require("../src/app.js");
 const { Post } = require("../src/db/schemas");
 
+let postId;
+let accessToken;
+let newPostSender;
+const userEmail = "meir@mail.com";
+const userPassword = "superSecretPassword";
+
+beforeAll(async () => {
+  await mongoose.connect(process.env.DATABASE_URL, {
+    useUnifiedTopology: true,
+  });
+
+  const res = await request(app)
+    .set("Authorization", "JWT " + accessToken)
+    .post("/auth/register")
+    .send({
+      email: userEmail,
+      password: userPassword,
+    });
+
+  newPostSender = res.body._id;
+});
+
+async function loginUser() {
+  const response = await request(app)
+    .set("Authorization", "JWT " + accessToken)
+    .post("/auth/login")
+    .send({
+      email: userEmail,
+      password: userPassword,
+    });
+
+  accessToken = response.body.accessToken;
+}
+
+beforeEach(async () => {
+  await loginUser();
+
+  const samplePost = new Post({
+    message: "Sample Post",
+    senderId: new mongoose.Types.ObjectId(),
+  });
+  const savedPost = await samplePost.save();
+  postId = savedPost._id;
+});
+
+afterAll(async () => {
+  await mongoose.connection.db.dropDatabase();
+  await mongoose.connection.close();
+});
+
+afterEach(async () => {
+  await Post.deleteMany(); // Clean up the collection after each test
+});
+
 describe("Testing Post Routes", () => {
-  let postId;
-  let accessToken;
-  let newPostSender;
-  const userEmail = "meir@mail.com";
-  const userPassword = "superSecretPassword";
-
-  beforeAll(async () => {
-    await mongoose.connect(process.env.DATABASE_URL, {
-      useUnifiedTopology: true,
-    });
-
-    const res = await request(app)
-      .set("Authorization", "JWT " + accessToken)
-      .post("/auth/register")
-      .send({
-        email: userEmail,
-        password: userPassword,
-      });
-
-    newPostSender = res.body._id;
-  });
-
-  async function loginUser() {
-    const response = await request(app)
-      .set("Authorization", "JWT " + accessToken)
-      .post("/auth/login")
-      .send({
-        email: userEmail,
-        password: userPassword,
-      });
-
-    accessToken = response.body.accessToken;
-  }
-
-  beforeEach(async () => {
-    await loginUser();
-
-    const samplePost = new Post({
-      message: "Sample Post",
-      senderId: new mongoose.Types.ObjectId(),
-    });
-    const savedPost = await samplePost.save();
-    postId = savedPost._id;
-  });
-
-  afterAll(async () => {
-    await mongoose.connection.db.dropDatabase();
-    await mongoose.connection.close();
-  });
-
-  afterEach(async () => {
-    await Post.deleteMany(); // Clean up the collection after each test
-  });
-
   // Test POST /posts
   describe("POST /posts", () => {
     it("should create a new post", async () => {

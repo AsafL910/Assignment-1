@@ -7,7 +7,7 @@ const { Post } = require("../src/db/schemas");
 
 let postId;
 let accessToken;
-let newPostSender;
+let senderId;
 const userEmail = "meir@mail.com";
 const userPassword = "superSecretPassword";
 
@@ -23,7 +23,7 @@ beforeAll(async () => {
       password: userPassword,
     });
 
-  newPostSender = res.body._id;
+    senderId = res.body._id;
 });
 
 async function loginUser() {

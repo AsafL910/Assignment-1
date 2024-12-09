@@ -16,26 +16,22 @@ beforeAll(async () => {
     useUnifiedTopology: true,
   });
 
-  const res = await request(app)
-    .post("/auth/register")
-    .send({
-      email: userEmail,
-      password: userPassword,
-    });
+  const res = await request(app).post("/auth/register").send({
+    email: userEmail,
+    password: userPassword,
+  });
 
-    senderId = res.body._id;
+  senderId = res.body._id;
 });
 
-async function loginUser() {
-  const response = await request(app)
-    .post("/auth/login")
-    .send({
-      email: userEmail,
-      password: userPassword,
-    });
+const loginUser = async () => {
+  const response = await request(app).post("/auth/login").send({
+    email: userEmail,
+    password: userPassword,
+  });
 
   accessToken = response.body.accessToken;
-}
+};
 
 beforeEach(async () => {
   await loginUser();
@@ -62,8 +58,8 @@ describe("Testing Post Routes", () => {
   describe("POST /posts", () => {
     it("should create a new post", async () => {
       const res = await request(app)
-        .post("/posts")
         .set("Authorization", "JWT " + accessToken)
+        .post("/posts")
         .send({
           message: "Hello, world!",
           senderId: new mongoose.Types.ObjectId(),
@@ -76,8 +72,8 @@ describe("Testing Post Routes", () => {
 
     it("should return 400 for missing body parameters", async () => {
       const res = await request(app)
-        .post("/posts")
         .set("Authorization", "JWT " + accessToken)
+        .post("/posts")
         .send({
           message: "No sender",
         });
@@ -88,8 +84,8 @@ describe("Testing Post Routes", () => {
 
     it("should return 400 for invalid parameter types", async () => {
       const res = await request(app)
-        .post("/posts")
         .set("Authorization", "JWT " + accessToken)
+        .post("/posts")
         .send({
           message: 12345, // Invalid type
           senderId: "invalid-id", // Invalid ObjectId
@@ -104,8 +100,8 @@ describe("Testing Post Routes", () => {
   describe("GET /posts", () => {
     it("should retrieve all posts", async () => {
       const res = await request(app)
-        .get("/posts")
-        .set("Authorization", "JWT " + accessToken);
+        .set("Authorization", "JWT " + accessToken)
+        .get("/posts");
 
       expect(res.statusCode).toBe(200);
       expect(Array.isArray(res.body)).toBeTruthy();
@@ -115,8 +111,8 @@ describe("Testing Post Routes", () => {
     it("should return an empty array if no posts exist", async () => {
       await Post.deleteMany();
       const res = await request(app)
-        .get("/posts")
-        .set("Authorization", "JWT " + accessToken);
+        .set("Authorization", "JWT " + accessToken)
+        .get("/posts");
 
       expect(res.statusCode).toBe(200);
       expect(Array.isArray(res.body)).toBeTruthy();
@@ -132,8 +128,8 @@ describe("Testing Post Routes", () => {
       await samplePost.save();
 
       const res = await request(app)
-        .get("/posts/sender")
         .set("Authorization", "JWT " + accessToken)
+        .get("/posts/sender")
         .query({ id: senderId.toString() });
       console.log("asaf" + res.error.message);
       expect(res.statusCode).toBe(200);
@@ -143,8 +139,8 @@ describe("Testing Post Routes", () => {
 
     it("should return 404 if senderId is not provided", async () => {
       const res = await request(app)
-        .get("/posts/sender")
-        .set("Authorization", "JWT " + accessToken);
+        .set("Authorization", "JWT " + accessToken)
+        .get("/posts/sender");
 
       expect(res.statusCode).toBe(404);
       expect(res.body).toHaveProperty("error", "senderId not provided");
@@ -152,8 +148,8 @@ describe("Testing Post Routes", () => {
 
     it("should return an empty array if no posts match senderId", async () => {
       const res = await request(app)
-        .get("/posts/sender")
         .set("Authorization", "JWT " + accessToken)
+        .get("/posts/sender")
         .query({
           id: new mongoose.Types.ObjectId().toString(),
         });
@@ -168,8 +164,8 @@ describe("Testing Post Routes", () => {
   describe("GET /posts/:id", () => {
     it("should retrieve a post by ID", async () => {
       const res = await request(app)
-        .get(`/posts/${postId}`)
-        .set("Authorization", "JWT " + accessToken);
+        .set("Authorization", "JWT " + accessToken)
+        .get(`/posts/${postId}`);
 
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty("_id", postId.toString());
@@ -178,8 +174,8 @@ describe("Testing Post Routes", () => {
     it("should return 404 for non-existent post ID", async () => {
       const invalidId = new mongoose.Types.ObjectId();
       const res = await request(app)
-        .get(`/posts/${invalidId}`)
-        .set("Authorization", "JWT " + accessToken);
+        .set("Authorization", "JWT " + accessToken)
+        .get(`/posts/${invalidId}`);
 
       expect(res.statusCode).toBe(404);
       expect(res.body).toHaveProperty("error", "Post not found");
@@ -187,8 +183,8 @@ describe("Testing Post Routes", () => {
 
     it("should return 500 for invalid post ID format", async () => {
       const res = await request(app)
-        .get("/posts/invalid-id")
-        .set("Authorization", "JWT " + accessToken);
+        .set("Authorization", "JWT " + accessToken)
+        .get("/posts/invalid-id");
 
       expect(res.statusCode).toBe(500);
     });
@@ -198,8 +194,8 @@ describe("Testing Post Routes", () => {
   describe("PUT /posts/:id", () => {
     it("should update a post by ID", async () => {
       const res = await request(app)
-        .set("Authorization", "JWT " + accessToken)
         .put(`/posts/${postId}`)
+        .set("Authorization", "JWT " + accessToken)
         .send({
           message: "Updated message!",
         });
@@ -211,8 +207,8 @@ describe("Testing Post Routes", () => {
 
     it("should return 400 for missing body parameters", async () => {
       const res = await request(app)
-        .set("Authorization", "JWT " + accessToken)
         .put(`/posts/${postId}`)
+        .set("Authorization", "JWT " + accessToken)
         .send({});
 
       expect(res.statusCode).toBe(400);
@@ -221,8 +217,8 @@ describe("Testing Post Routes", () => {
 
     it("should return 400 for invalid message type", async () => {
       const res = await request(app)
-        .set("Authorization", "JWT " + accessToken)
         .put(`/posts/${postId}`)
+        .set("Authorization", "JWT " + accessToken)
         .send({
           message: 12345, // Invalid type
         });
@@ -234,8 +230,8 @@ describe("Testing Post Routes", () => {
     it("should return 404 for non-existent post ID", async () => {
       const invalidId = new mongoose.Types.ObjectId();
       const res = await request(app)
-        .set("Authorization", "JWT " + accessToken)
         .put(`/posts/${invalidId}`)
+        .set("Authorization", "JWT " + accessToken)
         .send({
           message: "Non-existent post update",
         });
@@ -246,8 +242,8 @@ describe("Testing Post Routes", () => {
 
     it("should return 500 for invalid post ID format", async () => {
       const res = await request(app)
-        .set("Authorization", "JWT " + accessToken)
         .put("/posts/invalid-id")
+        .set("Authorization", "JWT " + accessToken)
         .send({
           message: "Invalid ID format test",
         });

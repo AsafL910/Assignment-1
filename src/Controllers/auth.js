@@ -3,9 +3,11 @@ const bcrypt = require("bcrypt");
 const router = express.Router();
 const { User } = require("../db/schemas");
 const authenticate = require("../Middlewares/authMiddleware");
-const {createUser} = require('../DAL/users')
-const jwt = require('jsonwebtoken');
-const sendError = (res, errorMessage = '') => res.status(400).json(errorMessage); 
+const { createUser } = require("../DAL/users");
+const jwt = require("jsonwebtoken");
+const sendError = (res, errorMessage = "") =>
+  res.status(400).json(errorMessage); //TODO: move to utils
+
 router.post("/register", async (req, res, next) => {
   // check if user is valid
   const email = req.body.email;
@@ -18,17 +20,21 @@ router.post("/register", async (req, res, next) => {
 
   // check if it is not already registered
   try {
-    const user = await User.findOne({ 'email': email });
+    const user = await User.findOne({ email: email }); //TODO: move to DAL
     if (user !== null) {
-      return sendError(res, 'user already registered');
+      return sendError(res, "user already registered");
     }
   } catch (err) {
     return sendError(res);
   }
 
   const newUser = await createUser(username, email, String(password));
-    return res.status(200).json({email: newUser.email, password: password});
-  
+  return res.status(200).json({
+    _id: newUser._id,
+    username: newUser.username,
+    email: newUser.email,
+    tokens: newUser.tokens,
+  });
 });
 
 router.post("/login", async (req, res, next) => {
@@ -38,27 +44,27 @@ router.post("/login", async (req, res, next) => {
     return sendError(res, "bad email or password");
 
   try {
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({ email: email }); //TODO: move to DAL
     if (user == null) return sendError(res, "bad email or password");
-    const match = await bcrypt.compare(String(password),user.password);
+    const match = await bcrypt.compare(String(password), user.password);
     if (!match) return sendError(res, "bad email or password");
-  
-    const accessToken = await jwt.sign(
+
+    const accessToken = jwt.sign(
       { _id: user._id },
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: process.env.JWT_TOKEN_EXPIRATION }
     );
-    const refreshToken = await jwt.sign(
+    const refreshToken = jwt.sign(
       { _id: user._id },
       process.env.REFRESH_TOKEN_SECRET
     );
-    
+
     if (user.tokens === null) {
       user.tokens = [refreshToken];
     } else {
       user.tokens.push(refreshToken);
     }
-    
+
     await user.save();
 
     res.status(200).send({
@@ -120,7 +126,7 @@ router.post("/refreshToken", async (req, res, next) => {
         return res.status(403).send("invalid request");
       }
 
-      const accessToken = await jwt.sign(
+      const accessToken = jwt.sign(
         {
           _id: user._id,
         },
@@ -130,7 +136,7 @@ router.post("/refreshToken", async (req, res, next) => {
         }
       );
 
-      const refreshToken = await jwt.sign(
+      const refreshToken = jwt.sign(
         {
           _id: user._id,
         },

@@ -1,3 +1,4 @@
+require("dotenv").config();
 process.env.DATABASE_URL = "mongodb://127.0.0.1:27017/testdb2";
 
 const mongoose = require("mongoose");
@@ -9,6 +10,7 @@ let postId;
 let senderId;
 let commentId;
 let accessToken;
+const username = "0123meir";
 const userEmail = "meir@mail.com";
 const userPassword = "superSecretPassword";
 
@@ -19,6 +21,7 @@ beforeAll(async () => {
   });
 
   const res = await request(app).post("/auth/register").send({
+    username,
     email: userEmail,
     password: userPassword,
   });
@@ -28,6 +31,7 @@ beforeAll(async () => {
 
 const loginUser = async () => {
   const response = await request(app).post("/auth/login").send({
+    username,
     email: userEmail,
     password: userPassword,
   });
@@ -44,6 +48,7 @@ beforeEach(async () => {
   });
   const savedPost = await samplePost.save();
   postId = savedPost._id;
+  console.log(postId, "postId to get Added");
 });
 
 afterAll(async () => {
@@ -56,8 +61,8 @@ describe("Comment Routes Tests", () => {
   // Test POST /newComment
   it("should save a new comment", async () => {
     const res = await request(app)
-      .set("Authorization", "JWT " + accessToken)
       .post("/comments/")
+      .set("Authorization", "Bearer " + accessToken)
       .send({
         content: "This is a test comment",
         senderId: senderId.toString(), // Pass the senderId created earlier
@@ -74,8 +79,8 @@ describe("Comment Routes Tests", () => {
 
   it("should return 400 for invalid body parameters", async () => {
     const res = await request(app)
-      .set("Authorization", "JWT " + accessToken)
       .post("/comments/")
+      .set("Authorization", "Bearer " + accessToken)
       .send({
         senderId: senderId.toString(), // Only passing senderId, missing content and postId
       });
@@ -86,8 +91,8 @@ describe("Comment Routes Tests", () => {
 
   it("should return 400 for invalid postId format", async () => {
     const res = await request(app)
-      .set("Authorization", "JWT " + accessToken)
       .post("/comments/")
+      .set("Authorization", "Bearer " + accessToken)
       .send({
         content: "Invalid postId test",
         senderId: senderId.toString(),
@@ -100,8 +105,8 @@ describe("Comment Routes Tests", () => {
 
   it("should return 400 for non-existent postId", async () => {
     const res = await request(app)
-      .set("Authorization", "JWT " + accessToken)
       .post("/comments/")
+      .set("Authorization", "Bearer " + accessToken)
       .send({
         content: "Non-existent postId test",
         senderId: senderId.toString(),
@@ -115,26 +120,26 @@ describe("Comment Routes Tests", () => {
   // Test GET /comment/:id
   it("should retrieve a comment by ID", async () => {
     const res = await request(app)
-      .set("Authorization", "JWT " + accessToken)
-      .get(`/comments/${commentId}`);
+      .get(`/comments/${commentId}`)
+      .set("Authorization", "Bearer " + accessToken);
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty("_id", commentId);
   });
 
   it("should return 404 for non-existent comment ID", async () => {
     const res = await request(app)
-      .set("Authorization", "JWT " + accessToken)
       .get(
         `/comment/${new mongoose.Types.ObjectId()}` // Non-existent comment ID
-      );
+      )
+      .set("Authorization", "Bearer " + accessToken);
     expect(res.statusCode).toBe(404);
   });
 
   // Test GET /comments
   it("should retrieve all comments", async () => {
     const res = await request(app)
-      .set("Authorization", "JWT " + accessToken)
-      .get("/comments");
+      .get("/comments")
+      .set("Authorization", "Bearer " + accessToken);
     expect(res.statusCode).toBe(200);
     expect(Array.isArray(res.body)).toBeTruthy();
     expect(res.body.length).toBeGreaterThan(0);
@@ -142,17 +147,18 @@ describe("Comment Routes Tests", () => {
 
   // Test GET /comments/post/:postId
   it("should retrieve comments by postId", async () => {
+    console.log("postId to get", postId);
     const res = await request(app)
-      .set("Authorization", "JWT " + accessToken)
-      .get(`/comments/post/${postId}`);
+      .get(`/comments/post/${postId}`)
+      .set("Authorization", "Bearer " + accessToken);
     expect(res.statusCode).toBe(200);
     expect(Array.isArray(res.body)).toBeTruthy();
   });
 
   it("should return 400 for invalid postId format", async () => {
     const res = await request(app)
-      .set("Authorization", "JWT " + accessToken)
-      .get("/comments/post/invalid-id");
+      .get("/comments/post/invalid-id")
+      .set("Authorization", "Bearer " + accessToken);
     expect(res.statusCode).toBe(400);
     expect(res.body).toHaveProperty("error", "Invalid post ID");
   });
@@ -160,8 +166,8 @@ describe("Comment Routes Tests", () => {
   // Test PUT /updateComment/:id
   it("should update a comment by ID", async () => {
     const res = await request(app)
-      .set("Authorization", "JWT " + accessToken)
       .put(`/comments/${commentId}`)
+      .set("Authorization", "Bearer " + accessToken)
       .send({
         content: "Updated comment content",
       });
@@ -172,8 +178,8 @@ describe("Comment Routes Tests", () => {
 
   it("should return 400 for missing body in update", async () => {
     const res = await request(app)
-      .set("Authorization", "JWT " + accessToken)
       .put(`/comments/${commentId}`)
+      .set("Authorization", "Bearer " + accessToken)
       .send({});
     expect(res.statusCode).toBe(400);
     expect(res.body).toBe("required body not provided");
@@ -182,32 +188,32 @@ describe("Comment Routes Tests", () => {
   // Test DELETE /deleteComment/:id
   it("should delete a comment by ID", async () => {
     const res = await request(app)
-      .set("Authorization", "JWT " + accessToken)
-      .delete(`/comments/${commentId}`);
+      .delete(`/comments/${commentId}`)
+      .set("Authorization", "Bearer " + accessToken);
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty("message", "Comment deleted successfully");
 
     // Verify comment is deleted
     const check = await request(app)
-      .set("Authorization", "JWT " + accessToken)
-      .get(`/comments/${commentId}`);
+      .get(`/comments/${commentId}`)
+      .set("Authorization", "Bearer " + accessToken);
     expect(check.statusCode).toBe(404);
   });
 
   it("should return 400 for invalid comment ID format in delete", async () => {
     const res = await request(app)
-      .set("Authorization", "JWT " + accessToken)
-      .delete(`/comments/invalid-id`);
+      .delete(`/comments/invalid-id`)
+      .set("Authorization", "Bearer " + accessToken);
     expect(res.statusCode).toBe(400);
     expect(res.body).toHaveProperty("error", "Invalid comment ID");
   });
 
   it("should return 404 for non-existent comment ID in delete", async () => {
     const res = await request(app)
-      .set("Authorization", "JWT " + accessToken)
       .delete(
         `/deleteComment/${new mongoose.Types.ObjectId()}` // Non-existent comment ID
-      );
+      )
+      .set("Authorization", "Bearer " + accessToken);
     expect(res.statusCode).toBe(404);
   });
 });

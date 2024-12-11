@@ -34,7 +34,7 @@ const loginUser = async () => {
     password: userPassword,
   });
 
-  accessToken = response.body.accessToken;
+  accessToken = response.body.accessToken;  
 };
 
 beforeEach(async () => {
@@ -51,10 +51,6 @@ beforeEach(async () => {
 afterAll(async () => {
   await mongoose.connection.db.dropDatabase();
   await mongoose.connection.close();
-});
-
-afterEach(async () => {
-  await Post.deleteMany(); // Clean up the collection after each test
 });
 
 describe("Testing Post Routes", () => {
@@ -175,21 +171,21 @@ describe("Testing Post Routes", () => {
     });
 
     it("should return 404 for non-existent post ID", async () => {
-      const invalidId = new mongoose.Types.ObjectId();
+      const newId = new mongoose.Types.ObjectId();
       const res = await request(app)
-        .get(`/posts/${invalidId}`)
+        .get(`/posts/${newId}`)
         .set("Authorization", "Bearer " + accessToken);
 
       expect(res.statusCode).toBe(404);
       expect(res.body).toHaveProperty("error", "Post not found");
     });
 
-    it("should return 500 for invalid post ID format", async () => {
+    it("should return 400 for invalid post ID format", async () => {
       const res = await request(app)
         .get("/posts/invalid-id")
         .set("Authorization", "Bearer " + accessToken);
 
-      expect(res.statusCode).toBe(500);
+      expect(res.statusCode).toBe(400);
     });
   });
 
@@ -225,7 +221,7 @@ describe("Testing Post Routes", () => {
         .send({
           message: 12345, // Invalid type
         });
-
+        
       expect(res.statusCode).toBe(400);
       expect(res.body).toBe("wrong type body parameters");
     });
@@ -243,15 +239,16 @@ describe("Testing Post Routes", () => {
       expect(res.body).toHaveProperty("error", "Post not found");
     });
 
-    it("should return 500 for invalid post ID format", async () => {
+    it("should return 400 for invalid post ID format", async () => {
       const res = await request(app)
         .put("/posts/invalid-id")
         .set("Authorization", "Bearer " + accessToken)
         .send({
           message: "Invalid ID format test",
         });
+        console.log("invaid ID", accessToken, res.body, res.statusCode);
 
-      expect(res.statusCode).toBe(500);
+      expect(res.statusCode).toBe(400);
     });
   });
 });

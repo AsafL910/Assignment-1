@@ -8,7 +8,7 @@ const { Post, User } = require("../src/db/schemas.js"); // Import Post schema fo
 
 let postId;
 let senderId;
-let commentId;
+let commentPostId;
 let accessToken;
 const username = "0123meir";
 const userEmail = "meir@mail.com";
@@ -36,7 +36,7 @@ const loginUser = async () => {
     password: userPassword,
   });
 
-  accessToken = response.body.accessToken;
+  accessToken = response.body.accessToken;  
 };
 
 beforeEach(async () => {
@@ -48,7 +48,8 @@ beforeEach(async () => {
   });
   const savedPost = await samplePost.save();
   postId = savedPost._id;
-  console.log(postId, "postId to get Added");
+  // console.log(postId, "idToCreate");
+  
 });
 
 afterAll(async () => {
@@ -65,8 +66,8 @@ describe("Comment Routes Tests", () => {
       .set("Authorization", "Bearer " + accessToken)
       .send({
         content: "This is a test comment",
-        senderId: senderId.toString(), // Pass the senderId created earlier
-        postId: postId.toString(), // Pass the postId created earlier
+        senderId: senderId.toString(),
+        postId: postId.toString(),
       });
 
     expect(res.statusCode).toBe(200);
@@ -74,7 +75,7 @@ describe("Comment Routes Tests", () => {
     expect(res.body.post).toHaveProperty("_id");
     expect(res.body.post).toHaveProperty("content", "This is a test comment");
 
-    commentId = res.body.post._id; // Save the comment ID for later tests
+    commentPostId = res.body.post._id; // Save the comment ID for later tests
   });
 
   it("should return 400 for invalid body parameters", async () => {
@@ -120,10 +121,10 @@ describe("Comment Routes Tests", () => {
   // Test GET /comment/:id
   it("should retrieve a comment by ID", async () => {
     const res = await request(app)
-      .get(`/comments/${commentId}`)
+      .get(`/comments/${commentPostId}`)
       .set("Authorization", "Bearer " + accessToken);
     expect(res.statusCode).toBe(200);
-    expect(res.body).toHaveProperty("_id", commentId);
+    expect(res.body).toHaveProperty("_id", commentPostId);
   });
 
   it("should return 404 for non-existent comment ID", async () => {
@@ -147,10 +148,11 @@ describe("Comment Routes Tests", () => {
 
   // Test GET /comments/post/:postId
   it("should retrieve comments by postId", async () => {
-    console.log("postId to get", postId);
     const res = await request(app)
       .get(`/comments/post/${postId}`)
       .set("Authorization", "Bearer " + accessToken);
+      // console.log(postId, "idToGet");
+
     expect(res.statusCode).toBe(200);
     expect(Array.isArray(res.body)).toBeTruthy();
   });
@@ -166,7 +168,7 @@ describe("Comment Routes Tests", () => {
   // Test PUT /updateComment/:id
   it("should update a comment by ID", async () => {
     const res = await request(app)
-      .put(`/comments/${commentId}`)
+      .put(`/comments/${commentPostId}`)
       .set("Authorization", "Bearer " + accessToken)
       .send({
         content: "Updated comment content",
@@ -178,7 +180,7 @@ describe("Comment Routes Tests", () => {
 
   it("should return 400 for missing body in update", async () => {
     const res = await request(app)
-      .put(`/comments/${commentId}`)
+      .put(`/comments/${commentPostId}`)
       .set("Authorization", "Bearer " + accessToken)
       .send({});
     expect(res.statusCode).toBe(400);
@@ -188,14 +190,14 @@ describe("Comment Routes Tests", () => {
   // Test DELETE /deleteComment/:id
   it("should delete a comment by ID", async () => {
     const res = await request(app)
-      .delete(`/comments/${commentId}`)
+      .delete(`/comments/${commentPostId}`)
       .set("Authorization", "Bearer " + accessToken);
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty("message", "Comment deleted successfully");
 
     // Verify comment is deleted
     const check = await request(app)
-      .get(`/comments/${commentId}`)
+      .get(`/comments/${commentPostId}`)
       .set("Authorization", "Bearer " + accessToken);
     expect(check.statusCode).toBe(404);
   });

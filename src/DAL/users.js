@@ -15,8 +15,7 @@ const createUser = async (username, email, password) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
   const newUser = new User({ username, email, password: hashedPassword });
-  newUser.save();
-  return newUser;
+  return newUser.save();
 };
 
 const getAllUsers = () => {
@@ -26,6 +25,9 @@ const getAllUsers = () => {
 const getUserById = (userId) => {
   return User.findById(userId);
 };
+const getUserByEmail = (email) => {
+  return User.findOne({ email: email })
+}
 
 const updateUserById = async (userId, username, email, password) => {
   if (username) {
@@ -57,6 +59,7 @@ module.exports = {
   createUser,
   getAllUsers,
   getUserById,
+  getUserByEmail,
   updateUserById,
   deleteUserById,
 };

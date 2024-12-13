@@ -4,7 +4,12 @@ const { User } = require("../db/schemas");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { createUser, getUserByEmail } = require("../DAL/users");
-const extractUserProps = (user) => ({ _id:user._id, username: user.username, email:user.email, tokens: user.tokens });
+const extractUserProps = (user) => ({
+  _id: user._id,
+  username: user.username,
+  email: user.email,
+  tokens: user.tokens,
+});
 const sendError = (res, errorMessage = "") =>
   res.status(400).json(errorMessage);
 
@@ -57,6 +62,9 @@ router.post("/login", async (req, res, next) => {
     await user.save();
 
     return res.status(200).send({
+      id: user._id,
+      username: user.username,
+      email: user.email,
       accessToken: accessToken,
       refreshToken: refreshToken,
     });

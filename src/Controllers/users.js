@@ -11,8 +11,12 @@ const {
   getUserByEmail,
 } = require("../DAL/users");
 
-const extractUserProps = (user) => ({ password: "", ...user });
-
+const extractUserProps = (user) => ({
+  _id: user._id,
+  username: user.username,
+  email: user.email,
+  tokens: user.tokens,
+});
 // Get all users
 router.get("/", authenticate, async (req, res) => {
   try {
@@ -27,10 +31,14 @@ router.get("/", authenticate, async (req, res) => {
 // Get a specific user by ID
 router.get("/:id", authenticate, async (req, res) => {
   try {
-    if (!req.params.id)
+    const id = req.params.id
+    if (!id)
       return res.status(400).json({ error: "Missing required fields" });
 
-    const user = await getUserById(req.params.id);
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "incorrect id format" });
+    }
+    const user = await getUserById(id);
 
     if (!user) {
       return res.status(404).json({
@@ -57,6 +65,9 @@ router.put("/:id", authenticate, async (req, res) => {
       return res.status(400).json({ error: "Missing required field: id" });
     }
 
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "incorrect id format" });
+    }
     const updatedUser = await updateUserById(id, username, email, password);
     if (!updatedUser) {
       return res.status(400).json({ error: "user Not Found" });
@@ -79,7 +90,7 @@ router.delete("/:id", authenticate, async (req, res) => {
     if (!id) {
       return res.status(400).json({ error: "Missing required field: id" });
     }
-    if (typeof id !== "string" || !mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: "incorrect id format" });
     }
     const user = await deleteUserById(id);

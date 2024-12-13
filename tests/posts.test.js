@@ -1,5 +1,5 @@
-require('dotenv').config();
-process.env.DATABASE_URL = "mongodb://127.0.0.1:27017/testdb";
+require("dotenv").config();
+process.env.DATABASE_URL = "mongodb://127.0.0.1:27017/testpostsdb";
 
 const mongoose = require("mongoose");
 const request = require("supertest");
@@ -9,32 +9,26 @@ const { Post } = require("../src/db/schemas");
 let postId;
 let accessToken;
 let senderId;
-const username = "123meir" 
-const userEmail = "meir@mail.com";
-const userPassword = "superSecretPassword";
+const mockUser = {
+  username: "123meir",
+  email: "meir@mail.com",
+  password: "superSecretPassword",
+};
 
 beforeAll(async () => {
   await mongoose.connect(process.env.DATABASE_URL, {
     useUnifiedTopology: true,
   });
 
-  const res = await request(app).post("/auth/register").send({
-    username,
-    email: userEmail,
-    password: userPassword,
-  });
+  const res = await request(app).post("/auth/register").send(mockUser);
 
   senderId = res.body._id;
 });
 
 const loginUser = async () => {
-  const response = await request(app).post("/auth/login").send({
-    username,
-    email: userEmail,
-    password: userPassword,
-  });
+  const response = await request(app).post("/auth/login").send(mockUser);
 
-  accessToken = response.body.accessToken;  
+  accessToken = response.body.accessToken;
 };
 
 beforeEach(async () => {
@@ -58,8 +52,8 @@ describe("Testing Post Routes", () => {
   describe("POST /posts", () => {
     it("should create a new post", async () => {
       const res = await request(app)
-      .post("/posts")
-      .set("Authorization", "Bearer " + accessToken)
+        .post("/posts")
+        .set("Authorization", "Bearer " + accessToken)
         .send({
           message: "Hello, world!",
           senderId: new mongoose.Types.ObjectId(),
@@ -72,8 +66,8 @@ describe("Testing Post Routes", () => {
 
     it("should return 400 for missing body parameters", async () => {
       const res = await request(app)
-      .post("/posts")
-      .set("Authorization", "Bearer " + accessToken)
+        .post("/posts")
+        .set("Authorization", "Bearer " + accessToken)
         .send({
           message: "No sender",
         });
@@ -84,8 +78,8 @@ describe("Testing Post Routes", () => {
 
     it("should return 400 for invalid parameter types", async () => {
       const res = await request(app)
-      .post("/posts")
-      .set("Authorization", "Bearer " + accessToken)
+        .post("/posts")
+        .set("Authorization", "Bearer " + accessToken)
         .send({
           message: 12345, // Invalid type
           senderId: "invalid-id", // Invalid ObjectId
@@ -221,7 +215,6 @@ describe("Testing Post Routes", () => {
         .send({
           message: 12345, // Invalid type
         });
-        
       expect(res.statusCode).toBe(400);
       expect(res.body).toBe("wrong type body parameters");
     });

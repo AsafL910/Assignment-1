@@ -1,5 +1,5 @@
 require("dotenv").config();
-process.env.DATABASE_URL = "mongodb://127.0.0.1:27017/testdb2";
+process.env.DATABASE_URL = "mongodb://127.0.0.1:27017/testcommentsdb";
 
 const mongoose = require("mongoose");
 const request = require("supertest");
@@ -10,9 +10,11 @@ let postId;
 let senderId;
 let commentPostId;
 let accessToken;
-const username = "123meir";
-const userEmail = "meir@mail.com";
-const userPassword = "superSecretPassword";
+const mockUser = {
+  username: "123meir",
+  email: "meir@mail.com",
+  password: "superSecretPassword",
+};
 
 beforeAll(async () => {
   // Connect to the test database
@@ -20,11 +22,7 @@ beforeAll(async () => {
     useUnifiedTopology: true,
   });
 
-  const res = await request(app).post("/auth/register").send({
-    username,
-    email: userEmail,
-    password: userPassword,
-  });
+  const res = await request(app).post("/auth/register").send(mockUser);
 
   senderId = res.body._id; // Save the senderId for later use
 
@@ -37,13 +35,9 @@ beforeAll(async () => {
 });
 
 const loginUser = async () => {
-  const response = await request(app).post("/auth/login").send({
-    username,
-    email: userEmail,
-    password: userPassword,
-  });
+  const response = await request(app).post("/auth/login").send(mockUser);
 
-  accessToken = response.body.accessToken;  
+  accessToken = response.body.accessToken;
 };
 
 beforeEach(async () => {
@@ -146,8 +140,8 @@ describe("Comment Routes Tests", () => {
 
   // Test GET /comments/post/:postId
   it("should retrieve comments by postId", async () => {
-    const comments = await Comment.find()
-    
+    const comments = await Comment.find();
+
     const res = await request(app)
       .get(`/comments/post/${postId}`)
       .set("Authorization", "Bearer " + accessToken);

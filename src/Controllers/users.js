@@ -1,41 +1,17 @@
+const mongoose = require("mongoose");
+const authenticate = require("../Middlewares/authMiddleware");
 const express = require("express");
 const router = express.Router();
 
 const {
-  createUser,
   getAllUsers,
   deleteUserById,
   getUserById,
   updateUserById,
+  getUserByEmail,
 } = require("../DAL/users");
-const mongoose = require("mongoose");
-const authenticate = require("../Middlewares/authMiddleware");
 
-const extractUserProps = (user) => ({
-  id: user.id,
-  username: user.username,
-  email: user.email,
-});
-
-//TODO: validate user not empty
-// Create a new user
-router.post("/", authenticate, async (req, res) => {
-  try {
-    const { username, email, password } = req.body;
-
-    if (!username || !email || !password)
-      return res.status(400).json({ error: "Missing required fields" });
-
-    const newUser = await createUser(username, email, password);
-    return res.status(201).json(extractUserProps(newUser));
-  } catch (error) {
-    error.message === "Username already exists" ||
-    error.message === "Email already exists"
-      ? res.status(400)
-      : res.status(500);
-    return res.json({ error: error.message });
-  }
-});
+const extractUserProps = (user) => ({ password: "", ...user });
 
 // Get all users
 router.get("/", authenticate, async (req, res) => {
@@ -68,12 +44,14 @@ router.get("/:id", authenticate, async (req, res) => {
   }
 });
 
-//TODO: validate data not empty
 // Update a user by ID
 router.put("/:id", authenticate, async (req, res) => {
   try {
     const { id } = req.params;
     const { username, email, password } = req.body;
+
+    if (username == "" || email == "" || password == "")
+      return res.status(400).json({ error: "cannot update to empty fields" });
 
     if (!id) {
       return res.status(400).json({ error: "Missing required field: id" });

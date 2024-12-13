@@ -1,40 +1,29 @@
 const express = require("express");
-const bcrypt = require("bcrypt");
 const router = express.Router();
 const { User } = require("../db/schemas");
-const authenticate = require("../Middlewares/authMiddleware");
-const { createUser } = require("../DAL/users");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const { createUser, getUserByEmail } = require("../DAL/users");
+const extractUserProps = (user) => ({ _id:user._id, username: user.username, email:user.email, tokens: user.tokens });
 const sendError = (res, errorMessage = "") =>
-  res.status(400).json(errorMessage); //TODO: move to utils
+  res.status(400).json(errorMessage);
 
-router.post("/register", async (req, res, next) => {
-  // check if user is valid
-  const email = req.body.email;
-  const password = req.body.password;
-  const username = req.body.username;
-
-  if (email === null || password === null) {
-    return sendError(res);
-  }
-
-  // check if it is not already registered
+// Create a new user
+router.post("/register", async (req, res) => {
   try {
-    const user = await User.findOne({ email: email }); //TODO: move to DAL
-    if (user !== null) {
-      return sendError(res, "user already registered");
-    }
-  } catch (err) {
-    return sendError(res);
-  }
+    const { username, email, password } = req.body;
 
-  const newUser = await createUser(username, email, String(password));
-  return res.status(200).json({
-    _id: newUser._id,
-    username: newUser.username,
-    email: newUser.email,
-    tokens: newUser.tokens,
-  });
+    if (!username || !email || !password)
+      return res.status(400).json({ error: "Missing required fields" });
+
+    const user = await createUser(username, email, password);
+
+    return res.status(201).json(extractUserProps(user));
+  } catch (error) {
+    console.log("registration returned error:", error.message);
+
+    return sendError(res, error.message);
+  }
 });
 
 router.post("/login", async (req, res, next) => {
@@ -44,7 +33,7 @@ router.post("/login", async (req, res, next) => {
     return sendError(res, "bad email or password");
 
   try {
-    const user = await User.findOne({ email: email }); //TODO: move to DAL
+    const user = await getUserByEmail(email);
     if (user == null) return sendError(res, "bad email or password");
     const match = await bcrypt.compare(String(password), user.password);
     if (!match) return sendError(res, "bad email or password");
@@ -67,11 +56,13 @@ router.post("/login", async (req, res, next) => {
 
     await user.save();
 
-    res.status(200).send({
+    return res.status(200).send({
       accessToken: accessToken,
       refreshToken: refreshToken,
     });
   } catch (err) {
+    console.log("login failed: ", err.message);
+
     return sendError(res, err);
   }
 });
@@ -101,7 +92,7 @@ router.post("logout", async (req, res, next) => {
 
       res.status(200).send();
     } catch (err) {
-      res.status(403).send(err.message);
+      res.status(403).send({ message: err.message });
     }
   });
 });

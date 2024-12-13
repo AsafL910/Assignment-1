@@ -10,7 +10,7 @@ let postId;
 let senderId;
 let commentPostId;
 let accessToken;
-const username = "0123meir";
+const username = "123meir";
 const userEmail = "meir@mail.com";
 const userPassword = "superSecretPassword";
 
@@ -34,7 +34,6 @@ beforeAll(async () => {
   });
   const savedPost = await samplePost.save();
   postId = savedPost._id;
-  console.log(postId, "idToCreate");
 });
 
 const loginUser = async () => {

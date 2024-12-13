@@ -9,7 +9,7 @@ const { Post } = require("../src/db/schemas");
 let postId;
 let accessToken;
 let senderId;
-const username = "0123meir" 
+const username = "123meir" 
 const userEmail = "meir@mail.com";
 const userPassword = "superSecretPassword";
 

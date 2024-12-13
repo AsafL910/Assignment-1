@@ -246,8 +246,6 @@ describe("Testing Post Routes", () => {
         .send({
           message: "Invalid ID format test",
         });
-        console.log("invaid ID", accessToken, res.body, res.statusCode);
-
       expect(res.statusCode).toBe(400);
     });
   });

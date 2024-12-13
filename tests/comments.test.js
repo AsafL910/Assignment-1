@@ -4,7 +4,7 @@ process.env.DATABASE_URL = "mongodb://127.0.0.1:27017/testdb2";
 const mongoose = require("mongoose");
 const request = require("supertest");
 const app = require("../src/app.js"); // Adjust to your app's file path
-const { Post, User } = require("../src/db/schemas.js"); // Import Post schema for test setup
+const { Post, User, Comment } = require("../src/db/schemas.js"); // Import Post schema for test setup
 
 let postId;
 let senderId;
@@ -27,6 +27,14 @@ beforeAll(async () => {
   });
 
   senderId = res.body._id; // Save the senderId for later use
+
+  const samplePost = new Post({
+    message: "Sample Post",
+    senderId: new mongoose.Types.ObjectId(),
+  });
+  const savedPost = await samplePost.save();
+  postId = savedPost._id;
+  console.log(postId, "idToCreate");
 });
 
 const loginUser = async () => {
@@ -41,15 +49,6 @@ const loginUser = async () => {
 
 beforeEach(async () => {
   await loginUser();
-
-  const samplePost = new Post({
-    message: "Sample Post",
-    senderId: new mongoose.Types.ObjectId(),
-  });
-  const savedPost = await samplePost.save();
-  postId = savedPost._id;
-  // console.log(postId, "idToCreate");
-  
 });
 
 afterAll(async () => {
@@ -66,8 +65,8 @@ describe("Comment Routes Tests", () => {
       .set("Authorization", "Bearer " + accessToken)
       .send({
         content: "This is a test comment",
-        senderId: senderId.toString(),
-        postId: postId.toString(),
+        senderId: senderId,
+        postId: postId,
       });
 
     expect(res.statusCode).toBe(200);
@@ -148,10 +147,11 @@ describe("Comment Routes Tests", () => {
 
   // Test GET /comments/post/:postId
   it("should retrieve comments by postId", async () => {
+    const comments = await Comment.find()
+    
     const res = await request(app)
       .get(`/comments/post/${postId}`)
       .set("Authorization", "Bearer " + accessToken);
-      // console.log(postId, "idToGet");
 
     expect(res.statusCode).toBe(200);
     expect(Array.isArray(res.body)).toBeTruthy();

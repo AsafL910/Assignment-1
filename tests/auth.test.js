@@ -83,7 +83,7 @@ it("should not allow unauthorized access", async () => {
     const wrongToken = accessToken + 'wrong';
     
     const response = await request(app).get("/posts")
-    .set({ authorization: "Bearer " + wrongToken });
+    .set("Authorization", "Bearer " + wrongToken);
     
       expect(response.statusCode).toEqual(403);
     });
@@ -102,10 +102,32 @@ describe("Timeout and Refresh",()=>{
     const response = await request(app).post("/auth/refreshToken")
     .set("Authorization", "Bearer " + refreshToken)
 
-    newRefreshToken = response.body.refreshToken;
-
+    const newRefreshToken = response.body.refreshToken;
+    accessToken = response.body.accessToken
     expect(response.statusCode).toEqual(200);
 
     expect(newRefreshToken).not.toEqual(refreshToken);
+    refreshToken = newRefreshToken
   });
+})
+describe("Logout", () => {
+  it("should not allow logout without token", async () => {      
+      const response = await request(app).post("/auth/logout")
+        expect(response.statusCode).toEqual(403);
+      });
+      it("should not allow logout with incorrect token", async () => {
+        const wrongToken = accessToken;
+        
+        const response = await request(app).post("/auth/logout")
+        .set("authorization", "Bearer " + wrongToken)
+        
+          expect(response.statusCode).toEqual(403);
+        });
+    it("should allow authorized logout", async () => {
+      const response = await request(app).post("/auth/logout")
+      .set("authorization", "Bearer " + refreshToken)
+
+  expect(response.statusCode).toEqual(200);
+});
+
 })

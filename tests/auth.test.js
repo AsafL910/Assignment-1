@@ -1,5 +1,6 @@
 require("dotenv").config();
 process.env.DATABASE_URL = "mongodb://127.0.0.1:27017/testauthdb";
+process.env.JWT_TOKEN_EXPIRATION=3000;
 
 const mongoose = require("mongoose");
 const { User } = require("../src/db/schemas.js"); // Import Post schema for test setup
@@ -90,12 +91,12 @@ it("should not allow unauthorized access", async () => {
 
 describe("Timeout and Refresh",()=>{
   it("should timeout access", async () => {
-    await new Promise(r => setTimeout(r, 31 * 1000));
+    await new Promise(r => setTimeout(r, 3.1 * 1000));
     const response = await request(app).get("/posts")
     .set("Authorization", "Bearer " + accessToken)
     
     expect(response.statusCode).toEqual(403);
-  },32000);
+  },3200);
 
   it("should send Refresh Token", async () => {
     const response = await request(app).post("/auth/refreshToken")

@@ -5,6 +5,13 @@
     "version": "1.0.0"
   },
   "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+      "type": "http",
+      "scheme": "bearer",
+      "bearerFormat": "JWT"
+    }
+    },
     "schemas": {
       "User": {
         "type": "object",
@@ -59,6 +66,9 @@
       "get": {
         "summary": "Get a list of all users",
         "tags": ["Users"],
+        "security": [{
+          "bearerAuth": []
+        }],
         "responses": {
           "200": {
             "description": "List of users retrieved successfully",
@@ -72,41 +82,15 @@
             }
           }
         }
-      },
-      "post": {
-        "summary": "Create a new User",
-        "tags": ["Users"],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/User"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "User created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/User"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request (e.g., missing required fields)"
-          }
-        }
       }
     },
     "/users/{userId}": {
       "get": {
         "summary": "Get a specific user by ID",
         "tags": ["Users"],
+        "security": [{
+          "bearerAuth": []
+        }],
         "parameters": [
           {
             "name": "userId",
@@ -135,6 +119,9 @@
       "put": {
         "summary": "Update a specific user",
         "tags": ["Users"],
+        "security": [{
+          "bearerAuth": []
+        }],
         "parameters": [
           {
             "name": "userId",
@@ -176,6 +163,9 @@
       "delete": {
         "summary": "Delete a specific user by id",
         "tags": ["Users"],
+        "security": [{
+          "bearerAuth": []
+        }],
         "parameters": [
           {
             "name": "userId",
@@ -199,6 +189,9 @@
       "post": {
         "summary": "Create a new post",
         "tags": ["Posts"],
+        "security": [{
+          "bearerAuth": []
+        }],
         "requestBody": {
           "required": true,
           "content": {
@@ -237,6 +230,9 @@
       "get": {
         "summary": "Get all posts",
         "tags": ["Posts"],
+        "security": [{
+          "bearerAuth": []
+        }],
         "responses": {
           "200": {
             "description": "List of posts",
@@ -256,6 +252,9 @@
       "get": {
         "summary": "Get posts by sender ID",
         "tags": ["Posts"],
+        "security": [{
+          "bearerAuth": []
+        }],
         "parameters": [
           {
             "name": "id",
@@ -289,6 +288,9 @@
       "get": {
         "summary": "Get a post by post ID",
         "tags": ["Posts"],
+        "security": [{
+          "bearerAuth": []
+        }],
         "parameters": [
           {
             "name": "id",
@@ -319,6 +321,9 @@
       "put": {
         "summary": "Update a post by ID",
         "tags": ["Posts"],
+        "security": [{
+          "bearerAuth": []
+        }],
         "parameters": [
           {
             "name": "id",
@@ -369,6 +374,9 @@
       "delete": {
         "summary": "Delete a post",
         "tags": ["Posts"],
+        "security": [{
+          "bearerAuth": []
+        }],
         "parameters": [
           {
             "name": "id",
@@ -394,6 +402,9 @@
       "post": {
         "summary": "Create a new comment",
         "tags": ["Comments"],
+        "security": [{
+          "bearerAuth": []
+        }],
         "requestBody": {
           "required": true,
           "content": {
@@ -478,6 +489,9 @@
       "get": {
         "summary": "Get all comments",
         "tags": ["Comments"],
+        "security": [{
+          "bearerAuth": []
+        }],
         "responses": {
           "200": {
             "description": "List of all comments",
@@ -516,6 +530,9 @@
       "get": {
         "summary": "Get a comment by ID",
         "tags": ["Comments"],
+        "security": [{
+          "bearerAuth": []
+        }],
         "parameters": [
           {
             "name": "id",
@@ -544,6 +561,9 @@
       "put": {
         "summary": "Update a comment",
         "tags": ["Comments"],
+        "security": [{
+          "bearerAuth": []
+        }],
         "parameters": [
           {
             "name": "id",
@@ -594,6 +614,9 @@
       "delete": {
         "summary": "Delete a comment",
         "tags": ["Comments"],
+        "security": [{
+          "bearerAuth": []
+        }],
         "parameters": [
           {
             "name": "id",
@@ -619,6 +642,9 @@
       "get": {
         "summary": "Get comments for a specific post",
         "tags": ["Comments"],
+        "security": [{
+          "bearerAuth": []
+        }],
         "parameters": [
           {
             "name": "postId",
@@ -647,6 +673,120 @@
           }
         }
       }
-    }
+    },
+    "/auth/register": {
+      "post": {
+        "summary": "Register a new user",
+        "tags": ["Authentication"],
+        "description": "Creates a new user with the provided username, email, and password.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+"requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User successfully registered",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "_id": { "type": "string" },
+                "username": { "type": "string" },
+                "email": { "type": "string" },
+                "tokens": { "type": "array", "items": { "type": "string" } }
+              }
+            }
+          },
+          "400": { "description": "Bad Request" }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Login a user",
+        "tags": ["Authentication"],
+        "description": "Logs in a user and returns access and refresh tokens.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string" },
+                  "password": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User successfully logged in",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string" },
+                "username": { "type": "string" },
+                "email": { "type": "string" },
+                "accessToken": { "type": "string" },
+                "refreshToken": { "type": "string" }
+              }
+            }
+          },
+          "400": { "description": "Bad email or password" }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "summary": "Logout a user",
+        "tags": ["Authentication"],
+        "security": [{
+          "bearerAuth": []
+        }],
+        "description": "Logs out a user and invalidates the provided refresh token.",
+        "produces": ["application/json"],
+        "responses": {
+          "200": { "description": "User successfully logged out" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Invalid request or token" }
+        }
+      }
+    },
+    "/auth/refreshToken": {
+      "post": {
+        "summary": "Refresh access token",
+        "tags": ["Authentication"],
+        "security": [{
+          "bearerAuth": []
+        }],
+        "description": "Generates a new access token and refresh token using the provided refresh token.",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "New tokens generated",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "accessToken": { "type": "string" },
+                "refreshToken": { "type": "string" }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Invalid request or token" }
+        }
+      }
   }
+}
 }

@@ -87,6 +87,7 @@ router.delete("/:id", authenticate, async (req, res) => {
     }
 
     const deletedComment = await deleteCommentById(id);
+
     if (!deletedComment) {
       return res.status(404).json({ error: "Comment not found" });
     }
@@ -109,7 +110,6 @@ router.get("/post/:postId", authenticate, async (req, res) => {
       return res.status(400).json({ error: "Invalid post ID" });
     }
     const post = await getPostsById(postId);
-    console.log(post, postId);
     if (!post) {
       return res.status(404).json({
         error: "Post does not exist",

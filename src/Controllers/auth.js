@@ -75,7 +75,7 @@ router.post("/login", async (req, res, next) => {
   }
 });
 
-router.post("logout", async (req, res, next) => {
+router.post("/logout", async (req, res, next) => {
   const authHeaders = req.headers["authorization"];
   const token = authHeaders && authHeaders.split(" ")[1];
 

@@ -48,42 +48,6 @@ afterAll(async () => {
 });
 
 describe("Testing User Routes", () => {
-  //Todo: move to auth tests
-  //   // Test POST /users
-  //   describe("POST /users", () => {
-  //     it("should create a new user", async () => {
-  //       const res = await request(app).post("/users").send({
-  //         username: "NewUser",
-  //         email: "newuser@example.com",
-  //         password: "newpassword",
-  //       });
-
-  //       expect(res.statusCode).toBe(201);
-  //       expect(res.body).toHaveProperty("username", "NewUser");
-  //       expect(res.body).toHaveProperty("email", "newuser@example.com");
-  //     });
-
-  //     it("should return 400 for missing required fields", async () => {
-  //       const res = await request(app).post("/users").send({
-  //         username: "IncompleteUser",
-  //       });
-
-  //       expect(res.statusCode).toBe(400);
-  //       expect(res.body).toHaveProperty("error", "Missing required fields");
-  //     });
-
-  //     it("should return 400 if username or email already exists", async () => {
-  //       const res = await request(app).post("/users").send({
-  //         username: "TestUser",
-  //         email: "testuser@example.com",
-  //         password: "anotherpassword",
-  //       });
-
-  //       expect(res.statusCode).toBe(400);
-  //       expect(res.body).toHaveProperty("error");
-  //     });
-  //   });
-
   // Test GET /users
   describe("GET /users", () => {
     it("should retrieve all users", async () => {

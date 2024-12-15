@@ -1,28 +1,40 @@
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzVjNjM5ODJhOGQ0NDNkOGVhNGQ3OWIiLCJpYXQiOjE3MzQxOTg3MjUsImV4cCI6MTczNDIwMTcyNX0.o6W9ZKvioTG88OFv0xX3_un6HNpEkuBUDhujFAlVx-w
+@refreshToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzVjNjM5ODJhOGQ0NDNkOGVhNGQ3OWIiLCJpYXQiOjE3MzQxOTg0NzZ9.mughqFO4aO2p0zRpP2eFYOaNby9yc27txSf6N2d-17M
+@senderId = 67488a503494abd997b4af12
+@postId = 6738798c88f086de23f3209d
+@commentId = 6748901949152b8687e00985
+@userId = 67487d5d9ccb0b6c6b3de066
+
 ### posts API
 
 POST http://localhost:3000/posts
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
-    "senderId": "67488a503494abd997b4af12",
+    "senderId": "{{senderId}}",
     "message": "this is a test message"
 }
 ###
 
 GET http://localhost:3000/posts
+Authorization: Bearer {{token}}
 
 ###
 
-GET http://localhost:3000/posts/6734b95f9da035039afdcd09
+GET http://localhost:3000/posts/{{postId}}
+Authorization: Bearer {{token}}
 
 ###
 
-GET http://localhost:3000/posts/sender?id=67488a503494abd997b4af12
+GET http://localhost:3000/posts/sender?id={{senderId}}
+Authorization: Bearer {{token}}
 
 ###
 
-PUT http://localhost:3000/posts/6734b95f9da035039afdcd09
+PUT http://localhost:3000/posts/{{postId}}
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
     "message": "message to updateA"
@@ -32,29 +44,34 @@ Content-Type: application/json
 
 POST http://localhost:3000/comments
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
-    "senderId": "67488a503494abd997b4af12",
+    "senderId": "{{senderId}}",
     "content": "This is a comment.",
-    "postId": "6734b95f9da035039afdcd09"
+    "postId": "{{postId}}"
 }
 
 ###
 
 GET http://localhost:3000/comments
+Authorization: Bearer {{token}}
 
 ###
 
-GET http://localhost:3000/comments/6748901949152b8687e00985
+GET http://localhost:3000/comments/{{commentId}}
+Authorization: Bearer {{token}}
 
 ###
 
-GET http://localhost:3000/comments/post/6734b95f9da035039afdcd09
+GET http://localhost:3000/comments/post/{{postId}}
+Authorization: Bearer {{token}}
 
 ###
 
-PUT http://localhost:3000/comments/6748901949152b8687e00985
+PUT http://localhost:3000/comments/{{commentId}}
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
     "content": "Updated comment content"
@@ -62,29 +79,33 @@ Content-Type: application/json
 
 ###
 
-DELETE http://localhost:3000/comments/6748901949152b8687e00985
+DELETE http://localhost:3000/comments/{{commentId}}
+Authorization: Bearer {{token}}
 
 ### Users API
 
 POST http://localhost:3000/users
 Content-Type: application/json
 
-  {
+{
     "username": "meiar",
     "email": "user@awsomeDomaain1.com",
     "password": "passToEncrypt"
-  }
+}
 ###
 
 GET http://localhost:3000/users
+Authorization: Bearer {{token}}
 
 ###
 
-GET http://localhost:3000/users/67487d5d9ccb0b6c6b3de066
+GET http://localhost:3000/users/{{userId}}
+Authorization: Bearer {{token}}
 
 ###
-PUT http://localhost:3000/users/67487d5d9ccb0b6c6b3de066
+PUT http://localhost:3000/users/{{userId}}
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
     "username": "meirA",
@@ -92,4 +113,34 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:3000/users/67487d5d9ccb0b6c6b3de066
+DELETE http://localhost:3000/users/{{userId}}
+Authorization: Bearer {{token}}
+
+### auth API
+
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+    "username": "newuser",
+    "email": "newuser@example.com",
+    "password": "securepassword"
+}
+###
+
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+    "email": "newuser@example.com",
+    "password": "securepassword"
+}
+###
+
+POST http://localhost:3000/auth/logout
+Authorization: Bearer {{refreshToken}}
+
+###
+
+POST http://localhost:3000/auth/refreshToken
+Authorization: Bearer {{refreshToken}}

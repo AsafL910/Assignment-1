@@ -4,16 +4,17 @@ const { User } = require("../db/schemas");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { createUser, getUserByEmail } = require("../DAL/users");
+
 const extractUserProps = (user) => ({
   _id: user._id,
   username: user.username,
   email: user.email,
   tokens: user.tokens,
 });
+
 const sendError = (res, errorMessage = "") =>
   res.status(400).json(errorMessage);
 
-// Create a new user
 router.post("/register", async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -46,11 +47,11 @@ router.post("/login", async (req, res, next) => {
     const accessToken = jwt.sign(
       { _id: user._id },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: process.env.JWT_TOKEN_EXPIRATION }
+      { expiresIn: process.env.JWT_TOKEN_EXPIRATION },
     );
     const refreshToken = jwt.sign(
       { _id: user._id },
-      process.env.REFRESH_TOKEN_SECRET
+      process.env.REFRESH_TOKEN_SECRET,
     );
 
     if (user.tokens === null) {
@@ -90,7 +91,7 @@ router.post("/logout", async (req, res, next) => {
       if (user === null) return res.status(403).send("invalid request");
 
       if (!user.tokens.includes(token)) {
-        user.tokens = []; // Invalidate all user tokens
+        user.tokens = [];
         await user.save();
         return res.status(403).send("invalid request");
       }
@@ -120,7 +121,7 @@ router.post("/refreshToken", async (req, res, next) => {
       if (user === null) return res.status(403).send("invalid request");
 
       if (!user.tokens.includes(token)) {
-        user.tokens = []; // Invalidate all user tokens
+        user.tokens = [];
         await user.save();
         return res.status(403).send("invalid request");
       }
@@ -132,14 +133,14 @@ router.post("/refreshToken", async (req, res, next) => {
         process.env.ACCESS_TOKEN_SECRET,
         {
           expiresIn: process.env.JWT_TOKEN_EXPIRATION,
-        }
+        },
       );
 
       const refreshToken = jwt.sign(
         {
           _id: user._id,
         },
-        process.env.REFRESH_TOKEN_SECRET
+        process.env.REFRESH_TOKEN_SECRET,
       );
 
       user.tokens[user.tokens.indexOf(token)] = refreshToken;

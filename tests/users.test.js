@@ -3,8 +3,8 @@ process.env.DATABASE_URL = "mongodb://127.0.0.1:27017/testusersdb";
 
 const mongoose = require("mongoose");
 const request = require("supertest");
-const app = require("../src/app.js"); // Adjust this path to match your app
-const { User } = require("../src/db/schemas"); // Replace with the correct schema path
+const app = require("../src/app.js");
+const { User } = require("../src/db/schemas");
 
 let userId;
 let accessToken;
@@ -39,7 +39,7 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
-  await User.deleteMany(); // Clean up the collection after each test
+  await User.deleteMany();
 });
 
 afterAll(async () => {
@@ -48,7 +48,6 @@ afterAll(async () => {
 });
 
 describe("Testing User Routes", () => {
-  // Test GET /users
   describe("GET /users", () => {
     it("should retrieve all users", async () => {
       const res = await request(app)
@@ -72,7 +71,6 @@ describe("Testing User Routes", () => {
     });
   });
 
-  // Test GET /users/:id
   describe("GET /users/:id", () => {
     it("should retrieve a user by ID", async () => {
       const res = await request(app)
@@ -103,7 +101,6 @@ describe("Testing User Routes", () => {
     });
   });
 
-  // Test PUT /users/:id
   describe("PUT /users/:id", () => {
     it("should update a user by ID", async () => {
       const res = await request(app)
@@ -113,7 +110,7 @@ describe("Testing User Routes", () => {
           username: "UpdatedUser",
           email: "updateduser@example.com",
         });
-        
+
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty("username", "UpdatedUser");
       expect(res.body).toHaveProperty("email", "updateduser@example.com");
@@ -134,10 +131,8 @@ describe("Testing User Routes", () => {
     });
   });
 
-  // Test DELETE /users/:id
   describe("DELETE /users/:id", () => {
     it("should delete a user by ID", async () => {
-        
       const res = await request(app)
         .delete(`/users/${userId}`)
         .set("Authorization", "Bearer " + accessToken);

@@ -41,11 +41,11 @@ describe("Register and Login", () => {
     expect(response.statusCode).toEqual(400);
     expect(response.body.error).toEqual("Missing required fields");
   });
-        it("should return 400 if username or email already exists", async () => {
-        const res = await request(app).post("/auth/register").send(mockUser);
+  it("should return 400 if username or email already exists", async () => {
+    const res = await request(app).post("/auth/register").send(mockUser);
 
-        expect(res.statusCode).toBe(400);
-      });
+    expect(res.statusCode).toBe(400);
+  });
   it("should login user", async () => {
     const response = await request(app).post("/auth/login").send(mockUser);
 

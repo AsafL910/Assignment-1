@@ -48,7 +48,6 @@ afterAll(async () => {
 });
 
 describe("Testing Post Routes", () => {
-  // Test POST /posts
   describe("POST /posts", () => {
     it("should create a new post", async () => {
       const res = await request(app)
@@ -81,8 +80,8 @@ describe("Testing Post Routes", () => {
         .post("/posts")
         .set("Authorization", "Bearer " + accessToken)
         .send({
-          message: 12345, // Invalid type
-          senderId: "invalid-id", // Invalid ObjectId
+          message: 12345,
+          senderId: "invalid-id",
         });
 
       expect(res.statusCode).toBe(400);
@@ -90,7 +89,6 @@ describe("Testing Post Routes", () => {
     });
   });
 
-  // Test GET /posts
   describe("GET /posts", () => {
     it("should retrieve all posts", async () => {
       const res = await request(app)
@@ -114,7 +112,6 @@ describe("Testing Post Routes", () => {
     });
   });
 
-  // Test GET /posts/sender
   describe("GET /posts/sender", () => {
     it("should retrieve posts by senderId", async () => {
       const senderId = new mongoose.Types.ObjectId();
@@ -153,7 +150,6 @@ describe("Testing Post Routes", () => {
     });
   });
 
-  // Test GET /posts/:id
   describe("GET /posts/:id", () => {
     it("should retrieve a post by ID", async () => {
       const res = await request(app)
@@ -183,7 +179,6 @@ describe("Testing Post Routes", () => {
     });
   });
 
-  // Test PUT /posts/:id
   describe("PUT /posts/:id", () => {
     it("should update a post by ID", async () => {
       const res = await request(app)
@@ -213,7 +208,7 @@ describe("Testing Post Routes", () => {
         .put(`/posts/${postId}`)
         .set("Authorization", "Bearer " + accessToken)
         .send({
-          message: 12345, // Invalid type
+          message: 12345,
         });
       expect(res.statusCode).toBe(400);
       expect(res.body).toBe("wrong type body parameters");

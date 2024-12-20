@@ -17,7 +17,7 @@ const extractUserProps = (user) => ({
   email: user.email,
   tokens: user.tokens,
 });
-// Get all users
+
 router.get("/", authenticate, async (req, res) => {
   try {
     const users = await getAllUsers();

@@ -26,8 +26,8 @@ const getUserById = (userId) => {
   return User.findById(userId);
 };
 const getUserByEmail = (email) => {
-  return User.findOne({ email: email })
-}
+  return User.findOne({ email: email });
+};
 
 const updateUserById = async (userId, username, email, password) => {
   if (username) {

@@ -2,11 +2,12 @@
   "name": "assignment-1",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
-    "start": "nodemon src/index.js localhost 3000",
+    "start": "npm run build & nodemon dist/index.js localhost 3000",
+    "build": "rimraf ./dist & tsc -p .",
     "format": "prettier --write '**/*.{js,ts}'",
-    "test": "jest"
+    "test": "npm run build & jest dist/"
   },
   "author": "",
   "license": "ISC",
@@ -23,6 +24,9 @@
   "devDependencies": {
     "jest": "^29.7.0",
     "nodemon": "^3.1.7",
-    "prettier": "^3.3.3"
+    "prettier": "^3.3.3",
+    "rimraf": "^6.0.1",
+    "tsc": "^2.0.4",
+    "typescript": "^5.7.2"
   }
 }

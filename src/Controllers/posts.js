@@ -57,6 +57,11 @@ router.get("/sender", authenticate, async (req, res) => {
 
 router.get("/:id", authenticate, async (req, res) => {
   try {
+    const postId = req.params.id;
+
+    if (!mongoose.Types.ObjectId.isValid(postId)) {
+      return res.status(400).json({ error: "Invalid post ID" });
+    }
     const post = await getPostsById(req.params.id);
 
     if (!post) return res.status(404).json({ error: "Post not found" });
@@ -70,6 +75,10 @@ router.get("/:id", authenticate, async (req, res) => {
 
 router.put("/:id", authenticate, async (req, res) => {
   try {
+    const postId = req.params.id
+    if (!mongoose.Types.ObjectId.isValid(postId)) {
+      return res.status(400).json({ error: "Invalid post ID" });
+    }
     const newMessage = req.body.message;
     if (!newMessage) return res.status(400).json("required body not provided");
     if (typeof newMessage !== "string")

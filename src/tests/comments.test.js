@@ -3,8 +3,8 @@ process.env.DATABASE_URL = "mongodb://127.0.0.1:27017/testcommentsdb";
 
 const mongoose = require("mongoose");
 const request = require("supertest");
-const app = require("../src/app.js"); // Adjust to your app's file path
-const { Post, User, Comment } = require("../src/db/schemas.js"); // Import Post schema for test setup
+const app = require("../app.js"); // Adjust to your app's file path
+const { Post, User, Comment } = require("../db/schemas.js"); // Import Post schema for test setup
 
 let postId;
 let senderId;

@@ -34,12 +34,12 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
-  if (email == null || password == null)
+  if (email === null || password === null)
     return sendError(res, "bad email or password");
 
   try {
     const user = await getUserByEmail(email);
-    if (user == null) return sendError(res, "bad email or password");
+    if (user === null) return sendError(res, "bad email or password");
     const match = await bcrypt.compare(String(password), user.password);
     if (!match) return sendError(res, "bad email or password");
 

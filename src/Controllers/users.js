@@ -31,9 +31,8 @@ router.get("/", authenticate, async (req, res) => {
 // Get a specific user by ID
 router.get("/:id", authenticate, async (req, res) => {
   try {
-    const id = req.params.id
-    if (!id)
-      return res.status(400).json({ error: "Missing required fields" });
+    const id = req.params.id;
+    if (!id) return res.status(400).json({ error: "Missing required fields" });
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: "incorrect id format" });
@@ -58,7 +57,7 @@ router.put("/:id", authenticate, async (req, res) => {
     const { id } = req.params;
     const { username, email, password } = req.body;
 
-    if (username == "" || email == "" || password == "")
+    if (username === "" || email === "" || password === "")
       return res.status(400).json({ error: "cannot update to empty fields" });
 
     if (!id) {

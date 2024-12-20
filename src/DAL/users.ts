@@ -1,8 +1,7 @@
-const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
-const { User } = require("../db/schemas");
+import bcrypt from "bcrypt";
+import User from "../db/userSchema";
 
-const createUser = async (username, email, password) => {
+const createUser = async (username: string, email: string, password: string): Promise<any> => {
   const existingUser = await User.findOne({ username });
   if (existingUser) {
     throw new Error("Username already exists");
@@ -15,21 +14,22 @@ const createUser = async (username, email, password) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
   const newUser = new User({ username, email, password: hashedPassword });
-  return newUser.save();
+  return await newUser.save();
 };
 
-const getAllUsers = () => {
-  return User.find();
+const getAllUsers = async (): Promise<any> => {
+  return await User.find();
 };
 
-const getUserById = (userId) => {
-  return User.findById(userId);
-};
-const getUserByEmail = (email) => {
-  return User.findOne({ email: email });
+const getUserById = async (userId: string): Promise<any> => {
+  return await User.findById(userId);
 };
 
-const updateUserById = async (userId, username, email, password) => {
+const getUserByEmail = async (email: string): Promise<any> => {
+  return await User.findOne({ email });
+};
+
+const updateUserById = async (userId: string, username?: string, email?: string, password?: string): Promise<any> => {
   if (username) {
     const existingUser = await User.findOne({ username });
     if (existingUser) {
@@ -44,18 +44,18 @@ const updateUserById = async (userId, username, email, password) => {
     }
   }
 
-  return User.findByIdAndUpdate(
+  return await User.findByIdAndUpdate(
     userId,
     { username, email, password },
-    { new: true },
+    { new: true }
   );
 };
 
-const deleteUserById = (userId) => {
-  return User.findByIdAndDelete(userId);
+const deleteUserById = async (userId: string): Promise<any> => {
+  return await User.findByIdAndDelete(userId);
 };
 
-module.exports = {
+export {
   createUser,
   getAllUsers,
   getUserById,

@@ -4,7 +4,12 @@ const { User } = require("../db/schemas");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { createUser, getUserByEmail } = require("../DAL/users");
-const extractUserProps = (user) => ({ _id:user._id, username: user.username, email:user.email, tokens: user.tokens });
+const extractUserProps = (user) => ({
+  _id: user._id,
+  username: user.username,
+  email: user.email,
+  tokens: user.tokens,
+});
 const sendError = (res, errorMessage = "") =>
   res.status(400).json(errorMessage);
 
@@ -29,12 +34,12 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
-  if (email == null || password == null)
+  if (email === null || password === null)
     return sendError(res, "bad email or password");
 
   try {
     const user = await getUserByEmail(email);
-    if (user == null) return sendError(res, "bad email or password");
+    if (user === null) return sendError(res, "bad email or password");
     const match = await bcrypt.compare(String(password), user.password);
     if (!match) return sendError(res, "bad email or password");
 
@@ -57,6 +62,9 @@ router.post("/login", async (req, res, next) => {
     await user.save();
 
     return res.status(200).send({
+      id: user._id,
+      username: user.username,
+      email: user.email,
       accessToken: accessToken,
       refreshToken: refreshToken,
     });
@@ -67,7 +75,7 @@ router.post("/login", async (req, res, next) => {
   }
 });
 
-router.post("logout", async (req, res, next) => {
+router.post("/logout", async (req, res, next) => {
   const authHeaders = req.headers["authorization"];
   const token = authHeaders && authHeaders.split(" ")[1];
 

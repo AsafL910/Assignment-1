@@ -1,9 +1,8 @@
-const express = require("express");
-const router = express.Router();
-const { User } = require("../db/schemas");
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
-const { createUser, getUserByEmail } = require("../DAL/users");
+import express from"express";
+import User from "../db/userSchema";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import { createUser, getUserByEmail } from "../DAL/users";
 import { Response, Request, NextFunction } from "express";
 import { VerifyErrors } from "jsonwebtoken";
 
@@ -17,6 +16,7 @@ interface UserProps {
 interface JwtPayload {
   _id: string;
 }
+const router = express.Router();
 
 const extractUserProps = (user: any): UserProps => ({
   _id: user._id,
@@ -34,14 +34,17 @@ router.post("/register", async (req: Request, res: Response) : Promise<void> => 
 
     if (!username || !email || !password) {
       res.status(400).json({ error: "Missing required fields" });
+      return;
     }
 
     const user = await createUser(username, email, password);
 
     res.status(201).json(extractUserProps(user));
+    return;
   } catch (error: any) {
     console.log("registration returned error:", error.message);
     sendError(res, error.message);
+    return;
   }
 });
 
@@ -50,14 +53,22 @@ router.post("/login", async (req: Request, res: Response) : Promise<void> => {
 
   if (!email || !password) {
     sendError(res, "Bad email or password");
+    return;
   }
-
+  
   try {
     const user = await getUserByEmail(email);
-    if (!user) sendError(res, "Bad email or password");
+    console.log(user)
+    if (!user) {
+      sendError(res, "Bad email or password");
+      return;
+    }
 
     const match = await bcrypt.compare(String(password), user.password);
-    if (!match) sendError(res, "Bad email or password");
+    if (!match) {
+      sendError(res, "Bad email or password");
+      return;
+    }
 
     const accessToken = jwt.sign(
       { _id: user._id },
@@ -85,6 +96,8 @@ router.post("/login", async (req: Request, res: Response) : Promise<void> => {
       accessToken,
       refreshToken,
     });
+    return;
+
   } catch (err: any) {
     sendError(res, err.message);
   }
@@ -94,7 +107,10 @@ router.post("/logout", async (req: Request, res: Response,next: NextFunction) : 
   const authHeaders = req.headers["authorization"];
   const token = authHeaders && authHeaders.split(" ")[1];
 
-  if (!token) res.sendStatus(401);
+  if (!token) {
+    res.sendStatus(401);
+    return;
+  }
 
   jwt.verify(token as string, process.env.REFRESH_TOKEN_SECRET!, async (err: VerifyErrors | null, userInfo: any) => {
     if (err) res.status(403).send(err.message);
@@ -114,8 +130,10 @@ router.post("/logout", async (req: Request, res: Response,next: NextFunction) : 
       await user.save();
 
       res.status(200).send();
+      return;
     } catch (err: any) {
       res.status(403).send({ message: err.message });
+      return;
     }
   });
 });
@@ -124,7 +142,10 @@ router.post("/refreshToken", async (req: Request, res: Response): Promise<void> 
   const authHeaders = req.headers["authorization"];
   const token = authHeaders && authHeaders.split(" ")[1];
 
-  if (!token) res.sendStatus(401);
+  if (!token) {
+    res.sendStatus(401);
+    return;
+  }
 
   jwt.verify(token as string, process.env.REFRESH_TOKEN_SECRET!, async (err: VerifyErrors | null, userInfo: any) => {
     if (err) return res.status(403).send(err.message);
@@ -158,8 +179,10 @@ router.post("/refreshToken", async (req: Request, res: Response): Promise<void> 
         accessToken,
         refreshToken,
       });
+      return;
     } catch (err: any) {
       res.status(403).send(err.message);
+      return;
     }
   });
 });

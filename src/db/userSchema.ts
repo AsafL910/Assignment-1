@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document, Model, CallbackError } from "mongoose";
-const bcrypt = require("bcrypt");
+import bcrypt from "bcrypt";
 
 export interface IUser extends Document {
   username: string;
@@ -28,4 +28,5 @@ userSchema.pre<IUser>("save", async function (next) {
 });
 
 const User: Model<IUser> = mongoose.model<IUser>("User", userSchema);
+
 export default User;

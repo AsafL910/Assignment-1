@@ -6,7 +6,6 @@ import {
   deleteUserById,
   getUserById,
   updateUserById,
-  getUserByEmail,
 } from "../DAL/users";
 
 const router = express.Router();

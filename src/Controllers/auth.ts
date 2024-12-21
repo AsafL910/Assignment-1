@@ -1,4 +1,4 @@
-import express from"express";
+import express from "express";
 import User from "../db/userSchema";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
@@ -28,7 +28,7 @@ const extractUserProps = (user: any): UserProps => ({
 const sendError = (res: Response, errorMessage = "") =>
   res.status(400).json({ error: errorMessage });
 
-router.post("/register", async (req: Request, res: Response) : Promise<void> => {
+router.post("/register", async (req: Request, res: Response): Promise<void> => {
   try {
     const { username, email, password } = req.body;
 
@@ -48,17 +48,16 @@ router.post("/register", async (req: Request, res: Response) : Promise<void> => 
   }
 });
 
-router.post("/login", async (req: Request, res: Response) : Promise<void> => {
+router.post("/login", async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
 
   if (!email || !password) {
     sendError(res, "Bad email or password");
     return;
   }
-  
+
   try {
     const user = await getUserByEmail(email);
-    console.log(user)
     if (!user) {
       sendError(res, "Bad email or password");
       return;
@@ -97,94 +96,107 @@ router.post("/login", async (req: Request, res: Response) : Promise<void> => {
       refreshToken,
     });
     return;
-
   } catch (err: any) {
     sendError(res, err.message);
   }
 });
 
-router.post("/logout", async (req: Request, res: Response,next: NextFunction) : Promise<void> => {
-  const authHeaders = req.headers["authorization"];
-  const token = authHeaders && authHeaders.split(" ")[1];
+router.post(
+  "/logout",
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const authHeaders = req.headers["authorization"];
+    const token = authHeaders && authHeaders.split(" ")[1];
 
-  if (!token) {
-    res.sendStatus(401);
-    return;
-  }
-
-  jwt.verify(token as string, process.env.REFRESH_TOKEN_SECRET!, async (err: VerifyErrors | null, userInfo: any) => {
-    if (err) res.status(403).send(err.message);
-
-    const userId = (userInfo as JwtPayload)._id;
-    try {
-      const user = await User.findById(userId);
-      if (!user) return res.status(403).send("Invalid request");
-
-      if (!user.tokens.includes(token)) {
-        user.tokens = [];
-        await user.save();
-        return res.status(403).send("Invalid request");
-      }
-
-      user.tokens.splice(user.tokens.indexOf(token), 1);
-      await user.save();
-
-      res.status(200).send();
-      return;
-    } catch (err: any) {
-      res.status(403).send({ message: err.message });
+    if (!token) {
+      res.sendStatus(401);
       return;
     }
-  });
-});
 
-router.post("/refreshToken", async (req: Request, res: Response): Promise<void> => {
-  const authHeaders = req.headers["authorization"];
-  const token = authHeaders && authHeaders.split(" ")[1];
+    jwt.verify(
+      token as string,
+      process.env.REFRESH_TOKEN_SECRET!,
+      async (err: VerifyErrors | null, userInfo: any) => {
+        if (err) res.status(403).send(err.message);
 
-  if (!token) {
-    res.sendStatus(401);
-    return;
-  }
+        const userId = (userInfo as JwtPayload)._id;
+        try {
+          const user = await User.findById(userId);
+          if (!user) return res.status(403).send("Invalid request");
 
-  jwt.verify(token as string, process.env.REFRESH_TOKEN_SECRET!, async (err: VerifyErrors | null, userInfo: any) => {
-    if (err) return res.status(403).send(err.message);
+          if (!user.tokens.includes(token)) {
+            user.tokens = [];
+            await user.save();
+            return res.status(403).send("Invalid request");
+          }
 
-    const userId = (userInfo as JwtPayload)._id;
-    try {
-      const user = await User.findById(userId);
-      if (!user) return res.status(403).send("Invalid request");
+          user.tokens.splice(user.tokens.indexOf(token), 1);
+          await user.save();
 
-      if (!user.tokens.includes(token)) {
-        user.tokens = [];
-        await user.save();
-        return res.status(403).send("Invalid request");
+          res.status(200).send();
+          return;
+        } catch (err: any) {
+          res.status(403).send({ message: err.message });
+          return;
+        }
       }
+    );
+  }
+);
 
-      const accessToken = jwt.sign(
-        { _id: user._id },
-        process.env.ACCESS_TOKEN_SECRET!,
-        { expiresIn: process.env.JWT_TOKEN_EXPIRATION! }
-      );
+router.post(
+  "/refreshToken",
+  async (req: Request, res: Response): Promise<void> => {
+    const authHeaders = req.headers["authorization"];
+    const token = authHeaders && authHeaders.split(" ")[1];
 
-      const refreshToken = jwt.sign(
-        { _id: user._id },
-        process.env.REFRESH_TOKEN_SECRET!
-      );
-
-      user.tokens[user.tokens.indexOf(token)] = refreshToken;
-      await user.save();
-
-      res.status(200).send({
-        accessToken,
-        refreshToken,
-      });
-      return;
-    } catch (err: any) {
-      res.status(403).send(err.message);
+    if (!token) {
+      res.sendStatus(401);
       return;
     }
-  });
-});
+
+    jwt.verify(
+      token as string,
+      process.env.REFRESH_TOKEN_SECRET!,
+      async (err: VerifyErrors | null, userInfo: any) => {
+        if (err) return res.status(403).send(err.message);
+
+        const userId = (userInfo as JwtPayload)._id;
+        try {
+          const user = await User.findById(userId);
+          if (!user) return res.status(403).send("Invalid request");
+
+          if (!user.tokens.includes(token)) {
+            user.tokens = [];
+            await user.save();
+            return res.status(403).send("Invalid request");
+          }
+
+          const accessToken = jwt.sign(
+            { _id: user._id },
+            process.env.ACCESS_TOKEN_SECRET!,
+            { expiresIn: process.env.JWT_TOKEN_EXPIRATION! }
+          );
+
+          const refreshToken = jwt.sign(
+            { _id: user._id },
+            process.env.REFRESH_TOKEN_SECRET!
+          );
+
+          user.tokens[user.tokens.indexOf(token)] = refreshToken;
+          await user.save();
+
+          res.status(200).send({
+            accessToken,
+            refreshToken,
+          });
+          return;
+        } catch (err: any) {
+          res.status(403).send(err.message);
+          return;
+        }
+      }
+    );
+  }
+);
 
 export default router;

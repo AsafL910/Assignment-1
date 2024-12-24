@@ -52,7 +52,7 @@ router.post("/login", async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    sendError(res, "Bad email or password");
+    sendError(res, "Missing email or password");
     return;
   }
 
@@ -63,7 +63,7 @@ router.post("/login", async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const match = await bcrypt.compare(String(password), user.password);
+    const match = await bcrypt.compare(password, user.password);
     if (!match) {
       sendError(res, "Bad email or password");
       return;
@@ -116,7 +116,10 @@ router.post(
       token as string,
       process.env.REFRESH_TOKEN_SECRET!,
       async (err: VerifyErrors | null, userInfo: any) => {
-        if (err) res.status(403).send(err.message);
+        if (err) {
+          res.status(403).send(err.message);
+          return;
+        }
 
         const userId = (userInfo as JwtPayload)._id;
         try {

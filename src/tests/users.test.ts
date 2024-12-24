@@ -1,4 +1,5 @@
 import { config } from "dotenv";
+config();
 process.env.DATABASE_URL = "mongodb://127.0.0.1:27017/testusersdb";
 
 import { connect, connection, ObjectId, Types } from "mongoose";
@@ -6,7 +7,6 @@ import request from "supertest";
 import app from "../app";
 import { User } from "../db/schemas";
 
-config();
 let userId: ObjectId;
 let accessToken: string;
 

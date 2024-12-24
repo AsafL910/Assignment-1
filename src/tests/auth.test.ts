@@ -1,4 +1,5 @@
 import { config } from "dotenv";
+config();
 process.env.DATABASE_URL = "mongodb://127.0.0.1:27017/testauthdb";
 process.env.JWT_TOKEN_EXPIRATION = "3000";
 
@@ -6,7 +7,6 @@ import { connect, connection } from "mongoose";
 import app from "../app";
 import request from "supertest";
 
-config();
 let accessToken: string;
 let refreshToken: string;
 const mockUser = {
@@ -57,7 +57,7 @@ describe("Register and Login", () => {
     const response = await request(app).post("/auth/login").send({});
 
     expect(response.statusCode).toEqual(400);
-    expect(response.body).toEqual("bad email or password");
+    expect(response.body.error).toEqual("Missing email or password");
   });
   it("should not login user with non existent email", async () => {
     const response = await request(app)
@@ -65,7 +65,7 @@ describe("Register and Login", () => {
       .send({ email: "doesnotexist@gmail.com", password: "password" });
 
     expect(response.statusCode).toEqual(400);
-    expect(response.body).toEqual("bad email or password");
+    expect(response.body.error).toEqual("Bad email or password");
   });
   it("should not login user with no matching password", async () => {
     const response = await request(app)
@@ -76,7 +76,7 @@ describe("Register and Login", () => {
       });
 
     expect(response.statusCode).toEqual(400);
-    expect(response.body).toEqual("bad email or password");
+    expect(response.body.error).toEqual("Bad email or password");
   });
 });
 
@@ -125,7 +125,7 @@ describe("Timeout and Refresh", () => {
 describe("Logout", () => {
   it("should not allow logout without token", async () => {
     const response = await request(app).post("/auth/logout");
-    expect(response.statusCode).toEqual(403);
+    expect(response.statusCode).toEqual(401);
   });
   it("should not allow logout with incorrect token", async () => {
     const wrongToken = accessToken;

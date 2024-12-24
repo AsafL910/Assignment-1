@@ -3,8 +3,8 @@ process.env.DATABASE_URL = "mongodb://127.0.0.1:27017/testusersdb";
 
 const mongoose = require("mongoose");
 const request = require("supertest");
-const app = require("../src/app.js");
-const { User } = require("../src/db/schemas");
+const app = require("../app.js");
+const { User } = require("../db/schemas.js");
 
 let userId;
 let accessToken;

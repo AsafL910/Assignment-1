@@ -1,18 +1,17 @@
-require("dotenv").config();
+import { config } from "dotenv";
+config();
 process.env.DATABASE_URL = "mongodb://127.0.0.1:27017/testusersdb";
 
-const mongoose = require("mongoose");
-const request = require("supertest");
-const app = require("../app.js");
-const { User } = require("../db/schemas.js");
+import { connect, connection, ObjectId, Types } from "mongoose";
+import request from "supertest";
+import app from "../app";
+import { User } from "../db/schemas";
 
-let userId;
-let accessToken;
+let userId: ObjectId;
+let accessToken: string;
 
 beforeAll(async () => {
-  await mongoose.connect(process.env.DATABASE_URL, {
-    useUnifiedTopology: true,
-  });
+  await connect(process.env.DATABASE_URL);
 });
 
 const loginUser = async (user) =>
@@ -43,8 +42,8 @@ afterEach(async () => {
 });
 
 afterAll(async () => {
-  await mongoose.connection.db.dropDatabase();
-  await mongoose.connection.close();
+  await connection.db.dropDatabase();
+  await connection.close();
 });
 
 describe("Testing User Routes", () => {
@@ -83,7 +82,7 @@ describe("Testing User Routes", () => {
     });
 
     it("should return 404 for non-existent user ID", async () => {
-      const invalidId = new mongoose.Types.ObjectId();
+      const invalidId = new Types.ObjectId();
       const res = await request(app)
         .get(`/users/${invalidId}`)
         .set("Authorization", "Bearer " + accessToken);
@@ -117,7 +116,7 @@ describe("Testing User Routes", () => {
     });
 
     it("should return 404 for non-existent user ID", async () => {
-      const invalidId = new mongoose.Types.ObjectId();
+      const invalidId = new Types.ObjectId();
       const res = await request(app)
         .put(`/users/${invalidId}`)
         .set("Authorization", "Bearer " + accessToken)
@@ -142,7 +141,7 @@ describe("Testing User Routes", () => {
     });
 
     it("should return 404 for non-existent user ID", async () => {
-      const invalidId = new mongoose.Types.ObjectId();
+      const invalidId = new Types.ObjectId();
       const res = await request(app)
         .delete(`/users/${invalidId}`)
         .set("Authorization", "Bearer " + accessToken);

@@ -1,27 +1,26 @@
-require("dotenv").config();
+import { config } from "dotenv";
+config();
 process.env.DATABASE_URL = "mongodb://127.0.0.1:27017/testauthdb";
-process.env.JWT_TOKEN_EXPIRATION = 3000;
+process.env.JWT_TOKEN_EXPIRATION = "3000";
 
-const mongoose = require("mongoose");
-const app = require("../app.js"); 
-const request = require("supertest");
+import { connect, connection } from "mongoose";
+import app from "../app";
+import request from "supertest";
 
-let accessToken;
-let refreshToken;
+let accessToken: string;
+let refreshToken: string;
 const mockUser = {
   username: "123meir",
   email: "meir@mail.com",
   password: "superSecretPassword",
 };
 beforeAll(async () => {
-  await mongoose.connect(process.env.DATABASE_URL, {
-    useUnifiedTopology: true,
-  });
+  await connect(process.env.DATABASE_URL);
 });
 
 afterAll(async () => {
-  await mongoose.connection.db.dropDatabase();
-  await mongoose.connection.close();
+  await connection.db.dropDatabase();
+  await connection.close();
 });
 describe("Restrict access without Auth / ", () => {
   it("should respond with error", async () => {
@@ -32,7 +31,6 @@ describe("Restrict access without Auth / ", () => {
 describe("Register and Login", () => {
   it("should add new user", async () => {
     const response = await request(app).post("/auth/register").send(mockUser);
-    userId = response.body.id;
     expect(response.statusCode).toEqual(201);
   });
   it("should not create user with missing fields", async () => {
@@ -59,7 +57,7 @@ describe("Register and Login", () => {
     const response = await request(app).post("/auth/login").send({});
 
     expect(response.statusCode).toEqual(400);
-    expect(response.body).toEqual("bad email or password");
+    expect(response.body.error).toEqual("Missing email or password");
   });
   it("should not login user with non existent email", async () => {
     const response = await request(app)
@@ -67,7 +65,7 @@ describe("Register and Login", () => {
       .send({ email: "doesnotexist@gmail.com", password: "password" });
 
     expect(response.statusCode).toEqual(400);
-    expect(response.body).toEqual("bad email or password");
+    expect(response.body.error).toEqual("Bad email or password");
   });
   it("should not login user with no matching password", async () => {
     const response = await request(app)
@@ -78,7 +76,7 @@ describe("Register and Login", () => {
       });
 
     expect(response.statusCode).toEqual(400);
-    expect(response.body).toEqual("bad email or password");
+    expect(response.body.error).toEqual("Bad email or password");
   });
 });
 
@@ -127,7 +125,7 @@ describe("Timeout and Refresh", () => {
 describe("Logout", () => {
   it("should not allow logout without token", async () => {
     const response = await request(app).post("/auth/logout");
-    expect(response.statusCode).toEqual(403);
+    expect(response.statusCode).toEqual(401);
   });
   it("should not allow logout with incorrect token", async () => {
     const wrongToken = accessToken;

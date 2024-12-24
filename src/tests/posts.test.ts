@@ -1,14 +1,15 @@
-require("dotenv").config();
+import { config } from "dotenv";
+config();
 process.env.DATABASE_URL = "mongodb://127.0.0.1:27017/testpostsdb";
 
-const mongoose = require("mongoose");
-const request = require("supertest");
-const app = require("../app.js");
-const { Post } = require("../db/schemas.js");
+import { connect, Types, ObjectId, connection } from "mongoose";
+import request from "supertest";
+import app from "../app";
+import { Post } from "../db/schemas";
 
-let postId;
-let accessToken;
-let senderId;
+let postId: ObjectId;
+let accessToken: string;
+let senderId: ObjectId;
 const mockUser = {
   username: "123meir",
   email: "meir@mail.com",
@@ -16,9 +17,7 @@ const mockUser = {
 };
 
 beforeAll(async () => {
-  await mongoose.connect(process.env.DATABASE_URL, {
-    useUnifiedTopology: true,
-  });
+  await connect(process.env.DATABASE_URL);
 
   const res = await request(app).post("/auth/register").send(mockUser);
 
@@ -36,15 +35,15 @@ beforeEach(async () => {
 
   const samplePost = new Post({
     message: "Sample Post",
-    senderId: new mongoose.Types.ObjectId(),
+    senderId: new Types.ObjectId(),
   });
   const savedPost = await samplePost.save();
-  postId = savedPost._id;
+  postId = savedPost._id as ObjectId;
 });
 
 afterAll(async () => {
-  await mongoose.connection.db.dropDatabase();
-  await mongoose.connection.close();
+  await connection.db.dropDatabase();
+  await connection.close();
 });
 
 describe("Testing Post Routes", () => {
@@ -55,7 +54,7 @@ describe("Testing Post Routes", () => {
         .set("Authorization", "Bearer " + accessToken)
         .send({
           message: "Hello, world!",
-          senderId: new mongoose.Types.ObjectId(),
+          senderId: new Types.ObjectId(),
         });
 
       expect(res.statusCode).toBe(200);
@@ -114,7 +113,7 @@ describe("Testing Post Routes", () => {
 
   describe("GET /posts/sender", () => {
     it("should retrieve posts by senderId", async () => {
-      const senderId = new mongoose.Types.ObjectId();
+      const senderId = new Types.ObjectId();
       const samplePost = new Post({ message: "By sender", senderId });
       await samplePost.save();
 
@@ -141,7 +140,7 @@ describe("Testing Post Routes", () => {
         .get("/posts/sender")
         .set("Authorization", "Bearer " + accessToken)
         .query({
-          id: new mongoose.Types.ObjectId().toString(),
+          id: new Types.ObjectId().toString(),
         });
 
       expect(res.statusCode).toBe(200);
@@ -161,7 +160,7 @@ describe("Testing Post Routes", () => {
     });
 
     it("should return 404 for non-existent post ID", async () => {
-      const newId = new mongoose.Types.ObjectId();
+      const newId = new Types.ObjectId();
       const res = await request(app)
         .get(`/posts/${newId}`)
         .set("Authorization", "Bearer " + accessToken);
@@ -215,7 +214,7 @@ describe("Testing Post Routes", () => {
     });
 
     it("should return 404 for non-existent post ID", async () => {
-      const invalidId = new mongoose.Types.ObjectId();
+      const invalidId = new Types.ObjectId();
       const res = await request(app)
         .put(`/posts/${invalidId}`)
         .set("Authorization", "Bearer " + accessToken)

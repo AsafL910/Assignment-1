@@ -1,15 +1,16 @@
-require("dotenv").config();
+import { config } from "dotenv";
+config();
 process.env.DATABASE_URL = "mongodb://127.0.0.1:27017/testcommentsdb";
 
-const mongoose = require("mongoose");
-const request = require("supertest");
-const app = require("../app.js"); // Adjust to your app's file path
-const { Post, User, Comment } = require("../db/schemas.js"); // Import Post schema for test setup
+import { connect, Types, ObjectId, connection } from "mongoose";
+import request from "supertest";
+import app from "../app";
+import { Post, Comment } from "../db/schemas";
 
-let postId;
-let senderId;
-let commentPostId;
-let accessToken;
+let postId: ObjectId;
+let senderId: ObjectId;
+let commentPostId: ObjectId;
+let accessToken: string;
 const mockUser = {
   username: "123meir",
   email: "meir@mail.com",
@@ -17,9 +18,7 @@ const mockUser = {
 };
 
 beforeAll(async () => {
-  await mongoose.connect(process.env.DATABASE_URL, {
-    useUnifiedTopology: true,
-  });
+  await connect(process.env.DATABASE_URL);
 
   const res = await request(app).post("/auth/register").send(mockUser);
 
@@ -27,10 +26,10 @@ beforeAll(async () => {
 
   const samplePost = new Post({
     message: "Sample Post",
-    senderId: new mongoose.Types.ObjectId(),
+    senderId: new Types.ObjectId(),
   });
   const savedPost = await samplePost.save();
-  postId = savedPost._id;
+  postId = savedPost._id as ObjectId;
 });
 
 const loginUser = async () => {
@@ -44,8 +43,8 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
-  await mongoose.connection.db.dropDatabase();
-  await mongoose.connection.close();
+  await connection.db.dropDatabase();
+  await connection.close();
 });
 
 describe("Comment Routes Tests", () => {
@@ -100,7 +99,7 @@ describe("Comment Routes Tests", () => {
       .send({
         content: "Non-existent postId test",
         senderId: senderId.toString(),
-        postId: new mongoose.Types.ObjectId(),
+        postId: new Types.ObjectId(),
       });
 
     expect(res.statusCode).toBe(400);
@@ -117,7 +116,7 @@ describe("Comment Routes Tests", () => {
 
   it("should return 404 for non-existent comment ID", async () => {
     const res = await request(app)
-      .get(`/comment/${new mongoose.Types.ObjectId()}`)
+      .get(`/comment/${new Types.ObjectId()}`)
       .set("Authorization", "Bearer " + accessToken);
     expect(res.statusCode).toBe(404);
   });
@@ -194,7 +193,7 @@ describe("Comment Routes Tests", () => {
 
   it("should return 404 for non-existent comment ID in delete", async () => {
     const res = await request(app)
-      .delete(`/deleteComment/${new mongoose.Types.ObjectId()}`)
+      .delete(`/deleteComment/${new Types.ObjectId()}`)
       .set("Authorization", "Bearer " + accessToken);
     expect(res.statusCode).toBe(404);
   });

@@ -1,6 +1,6 @@
 import express from "express";
 import bodyParser from "body-parser";
-import {connect} from "./db/DbConnection";
+import { connect } from "./db/DbConnection";
 
 import postRouter from "./Controllers/posts";
 import commentRouter from "./Controllers/comments";

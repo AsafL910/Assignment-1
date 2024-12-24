@@ -26,11 +26,7 @@ const getAllComments = async () => {
 };
 
 const updateCommentById = async (id: string, content: string) => {
-  return await Comment.findByIdAndUpdate(
-    id,
-    { content },
-    { new: true }
-  );
+  return await Comment.findByIdAndUpdate(id, { content }, { new: true });
 };
 
 const deleteCommentById = async (id: string) => {

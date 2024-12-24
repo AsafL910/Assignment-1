@@ -1,4 +1,4 @@
-import Post, {IPost} from "../db/postSchema";
+import Post, { IPost } from "../db/postSchema";
 
 const savePost = async (post: IPost) => {
   const newPost = new Post(post);
@@ -39,7 +39,7 @@ const updatePostById = async (id: string, message: string) => {
     { message },
     {
       new: true,
-    }
+    },
   );
 };
 

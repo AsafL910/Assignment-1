@@ -1,7 +1,11 @@
 import bcrypt from "bcrypt";
 import User from "../db/userSchema";
 
-const createUser = async (username: string, email: string, password: string): Promise<any> => {
+const createUser = async (
+  username: string,
+  email: string,
+  password: string,
+): Promise<any> => {
   const existingUser = await User.findOne({ username });
   if (existingUser) {
     throw new Error("Username already exists");
@@ -29,7 +33,12 @@ const getUserByEmail = async (email: string): Promise<any> => {
   return await User.findOne({ email });
 };
 
-const updateUserById = async (userId: string, username?: string, email?: string, password?: string): Promise<any> => {
+const updateUserById = async (
+  userId: string,
+  username?: string,
+  email?: string,
+  password?: string,
+): Promise<any> => {
   if (username) {
     const existingUser = await User.findOne({ username });
     if (existingUser) {
@@ -47,7 +56,7 @@ const updateUserById = async (userId: string, username?: string, email?: string,
   return await User.findByIdAndUpdate(
     userId,
     { username, email, password },
-    { new: true }
+    { new: true },
   );
 };
 

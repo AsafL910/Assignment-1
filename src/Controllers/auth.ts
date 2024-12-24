@@ -72,12 +72,12 @@ router.post("/login", async (req: Request, res: Response): Promise<void> => {
     const accessToken = jwt.sign(
       { _id: user._id },
       process.env.ACCESS_TOKEN_SECRET!,
-      { expiresIn: process.env.JWT_TOKEN_EXPIRATION! }
+      { expiresIn: process.env.JWT_TOKEN_EXPIRATION! },
     );
 
     const refreshToken = jwt.sign(
       { _id: user._id },
-      process.env.REFRESH_TOKEN_SECRET!
+      process.env.REFRESH_TOKEN_SECRET!,
     );
 
     if (!user.tokens) {
@@ -141,9 +141,9 @@ router.post(
           res.status(403).send({ message: err.message });
           return;
         }
-      }
+      },
     );
-  }
+  },
 );
 
 router.post(
@@ -177,12 +177,12 @@ router.post(
           const accessToken = jwt.sign(
             { _id: user._id },
             process.env.ACCESS_TOKEN_SECRET!,
-            { expiresIn: process.env.JWT_TOKEN_EXPIRATION! }
+            { expiresIn: process.env.JWT_TOKEN_EXPIRATION! },
           );
 
           const refreshToken = jwt.sign(
             { _id: user._id },
-            process.env.REFRESH_TOKEN_SECRET!
+            process.env.REFRESH_TOKEN_SECRET!,
           );
 
           user.tokens[user.tokens.indexOf(token)] = refreshToken;
@@ -197,9 +197,9 @@ router.post(
           res.status(403).send(err.message);
           return;
         }
-      }
+      },
     );
-  }
+  },
 );
 
 export default router;

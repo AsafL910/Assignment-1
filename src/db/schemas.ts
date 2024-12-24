@@ -1,5 +1,5 @@
-import User from './userSchema'
-import Post from './postSchema'
-import Comment from './commentSchema'
+import User from "./userSchema";
+import Post from "./postSchema";
+import Comment from "./commentSchema";
 
-export {User, Post, Comment}
+export { User, Post, Comment };
